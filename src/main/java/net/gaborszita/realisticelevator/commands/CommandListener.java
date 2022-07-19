@@ -21,14 +21,19 @@ public class CommandListener implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender sender, Command command,
                            String label, String[] args) {
-    String[] commandArgs = Arrays.copyOfRange(args, 1, args.length);
     boolean ret;
-    try {
-      ret = manager.runCommand(sender, args[0], commandArgs);
-    } catch (CommandNotRegisteredException e) {
-      logger.warning("Attempted to run command that wasn't registered: "
-          + args[0]);
-      ret = false;
+    if (args.length==0) {
+      sender.sendMessage("Usage is: " + command.getUsage());
+      ret = true;
+    } else {
+      String[] commandArgs = Arrays.copyOfRange(args, 1, args.length);
+      try {
+        ret = manager.runCommand(sender, args[0], commandArgs);
+      } catch (CommandNotRegisteredException e) {
+        logger.warning("Attempted to run command that wasn't registered: "
+            + args[0]);
+        ret = false;
+      }
     }
     return ret;
   }

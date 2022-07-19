@@ -1,0 +1,4 @@
+name: RealisticElevator
+version: 1.0.0
+main: net.gaborszita.realisticelevator.RealisticElevator
+api-version: 1.17

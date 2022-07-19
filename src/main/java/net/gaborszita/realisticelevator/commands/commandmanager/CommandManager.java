@@ -19,16 +19,16 @@ public class CommandManager {
   }
 
   /**
-   * Executes a registered command.
+   * Runs a registered command.
    * @param sender Command sender
    * @param command Command to execute
    * @param args Command arguments
    * @return Indicates command success
    * @throws CommandNotRegisteredException If command wasn't registered
    */
-  public boolean executeCommand(CommandSender sender, String command,
-                                String[] args)
-                                throws CommandNotRegisteredException {
+  public boolean runCommand(CommandSender sender, String command,
+                            String[] args)
+                            throws CommandNotRegisteredException {
     CommandRunner runner = commands.get(command);
     if (runner == null) {
       throw new CommandNotRegisteredException("Command not registered: "

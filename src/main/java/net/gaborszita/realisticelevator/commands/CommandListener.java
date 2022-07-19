@@ -24,7 +24,7 @@ public class CommandListener implements CommandExecutor {
     String[] commandArgs = Arrays.copyOfRange(args, 1, args.length);
     boolean ret;
     try {
-      ret = manager.executeCommand(sender, args[0], commandArgs);
+      ret = manager.runCommand(sender, args[0], commandArgs);
     } catch (CommandNotRegisteredException e) {
       logger.warning("Attempted to run command that wasn't registered: "
           + args[0]);

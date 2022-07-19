@@ -1,4 +1,4 @@
-package net.gaborszita.realisticelevator.commandlistener;
+package net.gaborszita.realisticelevator.testcommandlistener;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

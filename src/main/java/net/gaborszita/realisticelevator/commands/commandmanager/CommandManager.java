@@ -4,9 +4,10 @@ import net.gaborszita.realisticelevator.commands.commandmanager.exceptions.Comma
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class CommandManager {
-  private final HashMap<String, CommandRunner> commands = new HashMap<>();
+  private final Map<String, CommandRunner> commands = new HashMap<>();
 
   /**
    * Registers a new command. If a command has already been registered, it

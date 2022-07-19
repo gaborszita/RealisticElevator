@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommandListener implements CommandExecutor {
   int l1x = -62;
@@ -27,7 +28,7 @@ public class CommandListener implements CommandExecutor {
 
       // move across x axis
 
-      ArrayList<Block> blocksToMove = new ArrayList<>();
+      List<Block> blocksToMove = new ArrayList<>();
 
       // get blocks to move
       for (int x=Math.max(l1x, l2x); x>=Math.min(l1x, l2x); x--) {

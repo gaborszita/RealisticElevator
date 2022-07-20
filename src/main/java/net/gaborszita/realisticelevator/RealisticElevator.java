@@ -12,7 +12,7 @@ public class RealisticElevator extends JavaPlugin {
     getLogger().info("Loading RealisticElevator");
     CommandManager commandManager = new CommandManager();
     Objects.requireNonNull(this.getCommand("elevator"))
-        .setExecutor(new CommandListener(commandManager, getLogger()));
+        .setExecutor(new CommandListener(this, commandManager));
     getLogger().info("RealisticElevator enabled");
   }
 

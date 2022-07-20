@@ -5,17 +5,17 @@ import net.gaborszita.realisticelevator.commands.commandmanager.exceptions.Comma
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class CommandListener implements CommandExecutor {
+  private final JavaPlugin plugin;
   private final CommandManager manager;
-  private final Logger logger;
 
-  public CommandListener(CommandManager manager, Logger logger) {
+  public CommandListener(JavaPlugin plugin, CommandManager manager) {
+    this.plugin = plugin;
     this.manager = manager;
-    this.logger = logger;
   }
 
   @Override
@@ -30,8 +30,8 @@ public class CommandListener implements CommandExecutor {
       try {
         ret = manager.runCommand(sender, args[0], commandArgs);
       } catch (CommandNotRegisteredException e) {
-        logger.warning("Attempted to run command that wasn't registered: "
-            + args[0]);
+        plugin.getLogger().warning("Attempted to run command that wasn't " +
+            "registered: " + args[0]);
         ret = false;
       }
     }

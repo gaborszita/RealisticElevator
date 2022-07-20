@@ -37,4 +37,8 @@ public class CommandManager {
     }
     return runner.runCommand(sender, args);
   }
+
+  public boolean isCommandRegistered(String command) {
+    return commands.containsKey(command);
+  }
 }

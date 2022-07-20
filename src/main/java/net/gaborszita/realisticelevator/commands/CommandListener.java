@@ -10,11 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Arrays;
 
 public class CommandListener implements CommandExecutor {
-  private final JavaPlugin plugin;
   private final CommandManager manager;
 
-  public CommandListener(JavaPlugin plugin, CommandManager manager) {
-    this.plugin = plugin;
+  public CommandListener(CommandManager manager) {
     this.manager = manager;
   }
 
@@ -27,11 +25,10 @@ public class CommandListener implements CommandExecutor {
       ret = true;
     } else {
       String[] commandArgs = Arrays.copyOfRange(args, 1, args.length);
-      try {
+      if (manager.isCommandRegistered(args[0])) {
         ret = manager.runCommand(sender, args[0], commandArgs);
-      } catch (CommandNotRegisteredException e) {
-        plugin.getLogger().warning("Attempted to run command that wasn't " +
-            "registered: " + args[0]);
+      } else {
+        sender.sendMessage("No such command: " + args[0]);
         ret = false;
       }
     }

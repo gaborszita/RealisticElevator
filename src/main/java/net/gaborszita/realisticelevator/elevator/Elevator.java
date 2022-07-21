@@ -106,6 +106,10 @@ public class Elevator {
     }
   }
 
+  void addFloorNoSave(int floorLevel, Floor floor) {
+    floors.put(floorLevel, floor);
+  }
+
   public static boolean create(JavaPlugin plugin, String name,
                                ElevatorManager manager, Location loc1,
                                Location loc2) {

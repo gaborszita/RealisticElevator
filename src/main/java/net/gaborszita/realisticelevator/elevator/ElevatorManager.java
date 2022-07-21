@@ -191,7 +191,7 @@ public class ElevatorManager {
           }
           Elevator.Floor floor = elevator.new Floor(loc,
               floorDoorLevers);
-          elevator.addFloor(floorLevel, floor);
+          elevator.addFloorNoSave(floorLevel, floor);
         }
         elevators.put(name, elevator);
       }

@@ -24,10 +24,9 @@ public class CommandManager {
    * @param sender Command sender
    * @param command Command to execute
    * @param args Command arguments
-   * @return Indicates command success
    * @throws CommandNotRegisteredException If command wasn't registered
    */
-  public boolean runCommand(CommandSender sender, String command,
+  public void runCommand(CommandSender sender, String command,
                             String[] args)
                             throws CommandNotRegisteredException {
     CommandRunner runner = commands.get(command);
@@ -35,10 +34,15 @@ public class CommandManager {
       throw new CommandNotRegisteredException("Command not registered: "
           + command);
     }
-    return runner.runCommand(sender, args);
+    runner.runCommand(sender, args);
   }
+
 
   public boolean isCommandRegistered(String command) {
     return commands.containsKey(command);
+  }
+
+  public String[] getRegisteredCommands() {
+    return commands.keySet().toArray(new String[0]);
   }
 }

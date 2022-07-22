@@ -18,7 +18,7 @@ public class CommandListener implements CommandExecutor {
   public boolean onCommand(CommandSender sender, Command command,
                            String label, String[] args) {
     if (args.length==0) {
-      String commands = "[" + String.join(",",
+      String commands = "[" + String.join("|",
           manager.getRegisteredCommands()) + "]";
 
       sender.sendMessage("Usage is: /elevator " + commands);

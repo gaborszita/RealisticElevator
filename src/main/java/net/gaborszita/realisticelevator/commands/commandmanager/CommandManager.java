@@ -1,6 +1,5 @@
 package net.gaborszita.realisticelevator.commands.commandmanager;
 
-import net.gaborszita.realisticelevator.commands.commandmanager.exceptions.CommandNotRegisteredException;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -23,14 +22,12 @@ public class CommandManager {
    * @param sender Command sender
    * @param command Command to execute
    * @param args Command arguments
-   * @throws CommandNotRegisteredException If command wasn't registered
    */
   public void runCommand(CommandSender sender, String command,
-                            String[] args)
-                            throws CommandNotRegisteredException {
+                            String[] args) {
     CommandRunner runner = commands.get(command);
     if (runner == null) {
-      throw new CommandNotRegisteredException("Command not registered: "
+      throw new IllegalArgumentException("Command not registered: "
           + command);
     }
     runner.runCommand(sender, args);

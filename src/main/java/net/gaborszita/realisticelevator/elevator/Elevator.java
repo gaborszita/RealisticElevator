@@ -1,6 +1,5 @@
 package net.gaborszita.realisticelevator.elevator;
 
-import net.gaborszita.realisticelevator.elevator.exceptions.ElevatorAlreadyExistsException;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
@@ -17,10 +16,6 @@ public class Elevator {
 
   private Elevator(String name, ElevatorManager manager,
                    Location loc1, Location loc2) {
-    if (manager.containsElevator(name)) {
-      throw new ElevatorAlreadyExistsException("Elevator already exists: "
-          + name);
-    }
     this.name = name;
     this.manager = manager;
     this.loc1 = loc1;
@@ -141,6 +136,10 @@ public class Elevator {
 
   public static boolean create(String name, ElevatorManager manager,
                                Location loc1, Location loc2) {
+    if (manager.containsElevator(name)) {
+      throw new IllegalArgumentException("Elevator already exists: "
+          + name);
+    }
     return new Elevator(name, manager, loc1, loc2).save();
   }
 

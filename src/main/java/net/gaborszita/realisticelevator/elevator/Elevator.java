@@ -8,7 +8,6 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class Elevator {
-  private final JavaPlugin plugin;
   private final String name;
   private final ElevatorManager manager;
   private Location loc1;
@@ -16,25 +15,22 @@ public class Elevator {
   private final List<Vector> doorLevers;
   private final Map<Integer, Floor> floors;
 
-  private Elevator(JavaPlugin plugin, String name, ElevatorManager manager,
+  private Elevator(String name, ElevatorManager manager,
                    Location loc1, Location loc2) {
     if (manager.containsElevator(name)) {
       throw new ElevatorAlreadyExistsException("Elevator already exists: "
           + name);
     }
-    this.plugin = plugin;
     this.name = name;
     this.manager = manager;
     this.loc1 = loc1;
     this.loc2 = loc2;
     this.doorLevers = new ArrayList<>();
     this.floors = new HashMap<>();
-    save();
   }
 
-  Elevator(JavaPlugin plugin, String name, ElevatorManager manager,
-           Location loc1, Location loc2, List<Vector> doorLevers) {
-    this.plugin = plugin;
+  Elevator(String name, ElevatorManager manager, Location loc1, Location loc2,
+           List<Vector> doorLevers) {
     this.name = name;
     this.manager = manager;
     this.loc1 = loc1;
@@ -87,6 +83,21 @@ public class Elevator {
     }
   }
 
+  public boolean containsDoorLever(Vector lever) {
+    return doorLevers.contains(lever);
+  }
+
+  public boolean removeDoorLever(Vector lever) {
+    if (!doorLevers.remove(lever)) {
+      return false;
+    } else if (!save()) {
+      doorLevers.add(lever);
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   public Map<Integer, Floor> getFloors() {
     Map<Integer, Floor> clonedMap = new HashMap<>();
     Set<Map.Entry<Integer, Floor>> entries = floors.entrySet();
@@ -96,7 +107,11 @@ public class Elevator {
     return clonedMap;
   }
 
-  public boolean addFloor(int floorLevel, Floor floor) {
+  public Floor getFloor(int floor) {
+    return floors.get(floor);
+  }
+
+  private boolean addFloor(int floorLevel, Floor floor) {
     Floor oldFloor = floors.put(floorLevel, floor);
     if (!save()) {
       floors.put(floorLevel, oldFloor);
@@ -106,32 +121,59 @@ public class Elevator {
     }
   }
 
-  void addFloorNoSave(int floorLevel, Floor floor) {
+  public boolean containsFloor(int floorLevel) {
+    return floors.containsKey(floorLevel);
+  }
+
+  public boolean removeFloor(int floorLevel) {
+    Floor oldFloor = floors.remove(floorLevel);
+    if (!save()) {
+      floors.put(floorLevel, oldFloor);
+      return false;
+    } else {
+      return oldFloor != null;
+    }
+  }
+
+  private void addFloorNoSave(int floorLevel, Floor floor) {
     floors.put(floorLevel, floor);
   }
 
-  public static boolean create(JavaPlugin plugin, String name,
-                               ElevatorManager manager, Location loc1,
-                               Location loc2) {
-    return new Elevator(plugin, name, manager, loc1, loc2).save();
+  public static boolean create(String name, ElevatorManager manager,
+                               Location loc1, Location loc2) {
+    return new Elevator(name, manager, loc1, loc2).save();
   }
 
   private boolean save() {
     return manager.saveElevator(name, this);
   }
 
-  public class Floor implements Cloneable {
-    Location loc;
-    List<Location> doorLevers;
+  public static class Floor implements Cloneable {
+    private final JavaPlugin plugin;
+    private final Elevator elevator;
+    private final Location loc;
+    private List<Location> doorLevers;
 
-    public Floor(Location loc) {
+    private Floor(JavaPlugin plugin, Elevator elevator, Location loc) {
+      this.plugin = plugin;
+      this.elevator = elevator;
       this.loc = loc;
       this.doorLevers = new ArrayList<>();
     }
 
-    public Floor(Location loc, List<Location> doorLevers) {
+    Floor(JavaPlugin plugin, Elevator elevator,
+                 int floorLevel, Location loc,
+                 List<Location> doorLevers) {
+      this.plugin = plugin;
+      this.elevator = elevator;
       this.loc = loc;
       this.doorLevers = doorLevers;
+      elevator.addFloorNoSave(floorLevel, this);
+    }
+
+    public static boolean create(JavaPlugin plugin, Elevator elevator,
+                                 int floorLevel, Location loc) {
+      return elevator.addFloor(floorLevel, new Floor(plugin, elevator, loc));
     }
 
     public Location getLocation() {
@@ -144,6 +186,46 @@ public class Elevator {
         clonedList.add(lever.clone());
       }
       return clonedList;
+    }
+
+    public boolean addDoorLever(Location loc) {
+      doorLevers.add(loc);
+      if (!save()) {
+        doorLevers.remove(doorLevers.size() - 1);
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    public boolean containsDoorLever(int x, int y, int z) {
+      for (Location lever: doorLevers) {
+        if (lever.getBlockX() == x && lever.getBlockY() == y
+            && lever.getBlockZ() == z) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public boolean removeDoorLever(int x, int y, int z) {
+      for (Location loc: doorLevers) {
+        if (loc.getBlockX() == x && loc.getBlockY() == y
+            && loc.getBlockZ() == z) {
+          doorLevers.remove(loc);
+          if (!save()) {
+            doorLevers.add(loc);
+            return false;
+          } else {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    public boolean save() {
+      return elevator.save();
     }
 
     @Override

@@ -116,7 +116,7 @@ public class ElevatorManager {
             JSONArray floorDoorLeverJson = new JSONArray(doorLeverArr);
             floorDoorLeversJson.put(floorDoorLeverJson);
           }
-          floorJson.put("doorLevers", doorLeversJson);
+          floorJson.put("doorLevers", floorDoorLeversJson);
           floorsJson.put(floorJson);
         }
         elevatorJson.put("floors", floorsJson);
@@ -128,7 +128,9 @@ public class ElevatorManager {
             + System.lineSeparator() + e);
         return false;
       }
-      elevators.put(name, elevator);
+      if (elevator != null) {
+        elevators.put(name, elevator);
+      }
     } catch (JSONException e) {
       plugin.getLogger().severe("Failed to parse elevators file."
           + System.lineSeparator() + e);
@@ -172,7 +174,7 @@ public class ElevatorManager {
           doorLevers.add(new Vector(doorLeverJson.getInt(0),
               doorLeverJson.getInt(1), doorLeverJson.getInt(2)));
         }
-        Elevator elevator = new Elevator(plugin, name, this, loc1, loc2,
+        Elevator elevator = new Elevator(name, this, loc1, loc2,
             doorLevers);
         JSONArray floorsJson = elevatorJson.getJSONArray("floors");
         for (int x=0; x<floorsJson.length(); x++) {
@@ -189,9 +191,8 @@ public class ElevatorManager {
                 floorDoorLeverJson.getInt(0), floorDoorLeverJson.getInt(1),
                 floorDoorLeverJson.getInt(2)));
           }
-          Elevator.Floor floor = elevator.new Floor(loc,
+          new Elevator.Floor(plugin, elevator, floorLevel, loc,
               floorDoorLevers);
-          elevator.addFloorNoSave(floorLevel, floor);
         }
         elevators.put(name, elevator);
       }

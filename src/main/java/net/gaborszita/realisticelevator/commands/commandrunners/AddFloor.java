@@ -6,7 +6,6 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AddFloor implements CommandRunner {
@@ -42,30 +41,26 @@ public class AddFloor implements CommandRunner {
       }
     }
 
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      Location loc = new Location(player.getWorld(), coords[0], coords[1],
-          coords[2]);
 
-      if (!manager.containsElevator(name)) {
-        sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
-            "does not exist.");
-      } else {
-        Elevator elevator = manager.getElevator(name);
-        if (elevator.getFloor(floorLevel) != null) {
-          sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " already " +
-              "exists.");
-        } else if (Elevator.Floor.create(plugin, elevator, floorLevel, loc)) {
-          sender.sendMessage("Floor " + floorLevel + " added to elevator " +
-              name + ".");
-        } else {
-          sender.sendMessage(ChatColor.RED + "Error adding floor " +
-              " to elevator " + name + ".\n"
-              + "Please check server logs for more information.");
-        }
-      }
+
+    if (!manager.containsElevator(name)) {
+      sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
+          "does not exist.");
     } else {
-      sender.sendMessage(userNeedsToRunCommandMessage);
+      Elevator elevator = manager.getElevator(name);
+      Location loc = new Location(elevator.getLoc1().getWorld(), coords[0],
+          coords[1], coords[2]);
+      if (elevator.getFloor(floorLevel) != null) {
+        sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " already " +
+            "exists.");
+      } else if (Elevator.Floor.create(plugin, elevator, floorLevel, loc)) {
+        sender.sendMessage("Floor " + floorLevel + " added to elevator " +
+            name + ".");
+      } else {
+        sender.sendMessage(ChatColor.RED + "Error adding floor " +
+            " to elevator " + name + ".\n"
+            + "Please check server logs for more information.");
+      }
     }
   }
 

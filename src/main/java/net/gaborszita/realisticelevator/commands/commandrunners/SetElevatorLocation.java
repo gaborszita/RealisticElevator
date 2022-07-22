@@ -1,11 +1,11 @@
 package net.gaborszita.realisticelevator.commands.commandrunners;
 
 import net.gaborszita.realisticelevator.commands.commandmanager.CommandRunner;
+import net.gaborszita.realisticelevator.elevator.Elevator;
 import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SetElevatorLocation implements CommandRunner {
   private final ElevatorManager manager;
@@ -30,24 +30,23 @@ public class SetElevatorLocation implements CommandRunner {
         return;
       }
     }
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      Location loc1 = new Location(player.getWorld(), coords[0], coords[1],
-          coords[2]);
-      Location loc2 = new Location(player.getWorld(), coords[3], coords[4],
-          coords[5]);
-      if (!manager.containsElevator(name)) {
-        sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
-            "does not exist.");
-      } else if (manager.getElevator(name).setLocation(loc1, loc2)) {
+
+    if (!manager.containsElevator(name)) {
+      sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
+          "does not exist.");
+    } else {
+      Elevator elevator = manager.getElevator(name);
+      Location loc1 = new Location(elevator.getLoc1().getWorld(), coords[0],
+          coords[1], coords[2]);
+      Location loc2 = new Location(elevator.getLoc1().getWorld(), coords[3],
+          coords[4], coords[5]);
+      if (elevator.setLocation(loc1, loc2)) {
         sender.sendMessage("Elevator " + name + " location set.");
       } else {
         sender.sendMessage(ChatColor.RED + "Error setting elevator " + name +
             " location.\n"
             + "Please check server logs for more information.");
       }
-    } else {
-      sender.sendMessage(userNeedsToRunCommandMessage);
     }
   }
 

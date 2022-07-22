@@ -6,7 +6,6 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class AddFloorDoorLever implements CommandRunner {
   private final ElevatorManager manager;
@@ -41,31 +40,26 @@ public class AddFloorDoorLever implements CommandRunner {
       }
     }
 
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      if (!manager.containsElevator(elevatorName)) {
-        sender.sendMessage(ChatColor.RED + "Elevator with name " + elevatorName + " " +
-            "does not exist.");
-      } else {
-        Elevator elevator = manager.getElevator(elevatorName);
-        Elevator.Floor floor = elevator.getFloor(floorLevel);
-        if (floor == null) {
-          sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
-              "not exist.");
-        } else if (floor.containsDoorLever(coords[0], coords[1], coords[2])) {
-          sender.sendMessage(ChatColor.RED + "Door lever at " + coords[0] +
-              " " + coords[1] + " " + coords[2] + " already exists.");
-        } else if (floor.addDoorLever(new Location(player.getWorld(),
-            coords[0], coords[1], coords[2]))) {
-          sender.sendMessage("Door level added to floor " + floorLevel + ".");
-        } else {
-          sender.sendMessage(ChatColor.RED + "Error adding door level to " +
-              "floor.\n" +
-              "Please check server logs for more information.");
-        }
-      }
+    if (!manager.containsElevator(elevatorName)) {
+      sender.sendMessage(ChatColor.RED + "Elevator with name " + elevatorName + " " +
+          "does not exist.");
     } else {
-      sender.sendMessage(getInvalidUsageMessage());
+      Elevator elevator = manager.getElevator(elevatorName);
+      Elevator.Floor floor = elevator.getFloor(floorLevel);
+      if (floor == null) {
+        sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
+            "not exist.");
+      } else if (floor.containsDoorLever(coords[0], coords[1], coords[2])) {
+        sender.sendMessage(ChatColor.RED + "Door lever at " + coords[0] +
+            " " + coords[1] + " " + coords[2] + " already exists.");
+      } else if (floor.addDoorLever(new Location(elevator.getLoc1().getWorld(),
+          coords[0], coords[1], coords[2]))) {
+        sender.sendMessage("Door level added to floor " + floorLevel + ".");
+      } else {
+        sender.sendMessage(ChatColor.RED + "Error adding door level to " +
+            "floor.\n" +
+            "Please check server logs for more information.");
+      }
     }
   }
 

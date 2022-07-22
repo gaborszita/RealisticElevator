@@ -11,12 +11,11 @@ public class CommandManager {
 
   /**
    * Registers a new command. If a command has already been registered, it
-   * will be assigned the new executor.
-   * @param command Command to register
+   * will be assigned the new runner.
    * @param runner Executor assigned to command
    */
-  public void registerCommand(String command, CommandRunner runner) {
-    commands.put(command, runner);
+  public void registerCommand(CommandRunner runner) {
+    commands.put(runner.getCommand(), runner);
   }
 
   /**

@@ -10,9 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CreateElevator implements CommandRunner {
+  private final JavaPlugin plugin;
   private final ElevatorManager manager;
 
-  public CreateElevator(ElevatorManager manager) {
+  public CreateElevator(JavaPlugin plugin, ElevatorManager manager) {
+    this.plugin = plugin;
     this.manager = manager;
   }
 
@@ -42,7 +44,7 @@ public class CreateElevator implements CommandRunner {
             coords[2]);
         Location loc2 = new Location(player.getWorld(), coords[3], coords[4],
             coords[5]);
-        if (Elevator.create(name, manager, loc1, loc2)) {
+        if (Elevator.create(plugin, name, manager, loc1, loc2)) {
           sender.sendMessage("Elevator " + name + " created.");
         } else {
           sender.sendMessage(ChatColor.RED + "Error creating elevator " + name

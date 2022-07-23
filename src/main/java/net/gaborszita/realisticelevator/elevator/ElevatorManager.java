@@ -174,7 +174,7 @@ public class ElevatorManager {
           doorLevers.add(new Vector(doorLeverJson.getInt(0),
               doorLeverJson.getInt(1), doorLeverJson.getInt(2)));
         }
-        Elevator elevator = new Elevator(name, this, loc1, loc2,
+        Elevator elevator = new Elevator(plugin, name, this, loc1, loc2,
             doorLevers);
         JSONArray floorsJson = elevatorJson.getJSONArray("floors");
         for (int x=0; x<floorsJson.length(); x++) {

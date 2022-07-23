@@ -20,6 +20,7 @@ public class RealisticElevator extends JavaPlugin {
     commandManager.registerCommand(new CreateElevator(this, manager));
     commandManager.registerCommand(new DeleteElevator(manager));
     commandManager.registerCommand(new ElevatorInfo(manager));
+    commandManager.registerCommand(new GoToFloor(manager));
     commandManager.registerCommand(new ListDoorLevers(manager));
     commandManager.registerCommand(new ListElevators(manager));
     commandManager.registerCommand(new ListFloorDoorLevers(manager));

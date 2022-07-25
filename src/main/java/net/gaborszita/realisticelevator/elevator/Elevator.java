@@ -191,25 +191,28 @@ public class Elevator {
       return false;
     }
     stops.add(floor);
-    if (!active) {
+    if (!active && masterBlock != null) {
       active = true;
       task = new Mover().runTaskTimer(plugin, 10, 10);
     }
     return true;
   }
 
-  private void reload() {
-    findBlocks();
-    stops.clear();
+  private void cancelTask() {
     if (active) {
       task.cancel();
       active = false;
     }
   }
 
+  private void reload() {
+    findBlocks();
+    stops.clear();
+    cancelTask();
+  }
+
   void unload() {
-    task.cancel();
-    active = false;
+    cancelTask();
     HandlerList.unregisterAll(blockEventListener);
     loaded = false;
   }
@@ -409,8 +412,7 @@ public class Elevator {
       }
 
       if (stops.isEmpty()) {
-        task.cancel();
-        active = false;
+        cancelTask();
         return;
       }
 
@@ -425,9 +427,10 @@ public class Elevator {
       }
 
       if (stops.stream().map(floors::get)
-          .map(floor -> floor.getLocation().getBlockY())
-          .filter(y -> y == masterBlock.getBlockY())
-          .anyMatch(y -> y == masterBlock.getBlockY())) {
+          .anyMatch(floor -> floor.getLocation().getBlockX() ==
+              masterBlock.getBlockX() &&
+              floor.getLocation().getBlockY() == masterBlock.getBlockY() &&
+              floor.getLocation().getBlockZ() == masterBlock.getBlockZ())) {
         // open doors
         if (stops.stream().map(floors::get)
             .map(floor -> floor.getLocation().getBlockY())
@@ -442,9 +445,25 @@ public class Elevator {
       }
 
       if (direction == 1) {
-        moveBlocks(1);
+        if (masterBlock.getBlockY()+1 >
+            Math.max(loc1.getBlockY(), loc2.getBlockY())) {
+          plugin.getLogger().warning("Elevator " + name + " was going up " +
+              "and reached max height, but still didn't arrive at a stop! " +
+              "Please check if floor coordinates are correct.");
+          cancelTask();
+        } else {
+          moveBlocks(1);
+        }
       } else {
-        moveBlocks(-1);
+        if (masterBlock.getBlockY()-1 <
+            Math.min(loc1.getBlockY(), loc2.getBlockY())) {
+          plugin.getLogger().warning("Elevator " + name + " was going down " +
+              "and reached min height, but still didn't arrive at a stop! " +
+              "Please check if floor coordinates are correct.");
+          cancelTask();
+        } else {
+          moveBlocks(-1);
+        }
       }
     }
 

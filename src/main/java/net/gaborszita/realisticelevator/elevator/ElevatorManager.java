@@ -34,7 +34,13 @@ public class ElevatorManager {
   }
 
   public boolean deleteElevator(String name) {
-    return elevators.remove(name) != null && saveElevator(name, null);
+    Elevator elevator = elevators.remove(name);
+    if (elevator != null) {
+      elevator.unload();
+      return saveElevator(name, null);
+    } else {
+      return false;
+    }
   }
 
   public Elevator getElevator(String name) {

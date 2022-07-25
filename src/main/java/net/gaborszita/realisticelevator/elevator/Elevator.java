@@ -4,6 +4,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -20,10 +26,12 @@ public class Elevator {
   private final List<Vector> doorLevers;
   private final Map<Integer, Floor> floors;
   private final Set<Integer> stops;
-  BukkitTask task;
+  private BukkitTask task;
+  private final BlockEventListener blockEventListener;
+  private boolean loaded;
   private boolean active = false;
   private Location masterBlock;
-  private ArrayList<Location> elevatorBlocks = new ArrayList<>();
+  private final ArrayList<Location> elevatorBlocks = new ArrayList<>();
   private int lowX, highX, lowZ, highZ, sizeY;
 
   private Elevator(JavaPlugin plugin, String name, ElevatorManager manager,
@@ -37,6 +45,10 @@ public class Elevator {
     this.floors = new HashMap<>();
     stops = new HashSet<>();
     findBlocks();
+    blockEventListener = new BlockEventListener();
+    plugin.getServer().getPluginManager().registerEvents(blockEventListener,
+        plugin);
+    loaded = true;
   }
 
   Elevator(JavaPlugin plugin, String name, ElevatorManager manager,
@@ -51,6 +63,10 @@ public class Elevator {
     this.floors = new HashMap<>();
     stops = new HashSet<>();
     findBlocks();
+    blockEventListener = new BlockEventListener();
+    plugin.getServer().getPluginManager().registerEvents(blockEventListener,
+        plugin);
+    loaded = true;
   }
 
   public String getName() {
@@ -67,6 +83,7 @@ public class Elevator {
       this.loc2 = oldLoc2;
       return false;
     } else {
+      reload();
       return true;
     }
   }
@@ -93,6 +110,7 @@ public class Elevator {
       doorLevers.remove(doorLevers.size() - 1);
       return false;
     } else {
+      reload();
       return true;
     }
   }
@@ -108,6 +126,7 @@ public class Elevator {
       doorLevers.add(lever);
       return false;
     } else {
+      reload();
       return true;
     }
   }
@@ -131,6 +150,7 @@ public class Elevator {
       floors.put(floorLevel, oldFloor);
       return false;
     } else {
+      reload();
       return true;
     }
   }
@@ -145,6 +165,9 @@ public class Elevator {
       floors.put(floorLevel, oldFloor);
       return false;
     } else {
+      if (oldFloor != null) {
+        reload();
+      }
       return oldFloor != null;
     }
   }
@@ -164,7 +187,7 @@ public class Elevator {
   }
 
   public boolean addStop(int floor) {
-    if (!floors.containsKey(floor)) {
+    if (!floors.containsKey(floor) || !loaded) {
       return false;
     }
     stops.add(floor);
@@ -178,9 +201,24 @@ public class Elevator {
   private void reload() {
     findBlocks();
     stops.clear();
-    if (!active) {
+    if (active) {
       task.cancel();
       active = false;
+    }
+  }
+
+  void unload() {
+    task.cancel();
+    active = false;
+    HandlerList.unregisterAll(blockEventListener);
+    loaded = false;
+  }
+
+  @Override
+  protected void finalize() {
+    if (loaded) {
+      unload();
+      plugin.getLogger().warning("Elevator " + name + " was not unloaded!");
     }
   }
 
@@ -192,6 +230,8 @@ public class Elevator {
     l2x = loc2.getBlockX();
     l2y = loc2.getBlockY();
     l2z = loc2.getBlockZ();
+    elevatorBlocks.clear();
+    masterBlock = null;
     for (int x=Math.min(l1x, l2x); x<=Math.max(l1x, l2x); x++) {
       for (int y=Math.min(l1y, l2y); y<=Math.max(l1y, l2y); y++) {
         for (int z=Math.min(l1z, l2z); z<=Math.max(l1z, l2z); z++) {
@@ -218,6 +258,42 @@ public class Elevator {
     return manager.saveElevator(name, this);
   }
 
+  private class BlockEventListener implements Listener {
+    @EventHandler
+    public void onBlockPlaceEvent(BlockPlaceEvent event) {
+      if (!event.isCancelled()) {
+        handle(event);
+      }
+    }
+
+    @EventHandler
+    public void onBlockDamageEvent(BlockDamageEvent event) {
+      if (!event.isCancelled()) {
+        handle(event);
+      }
+    }
+
+    public void handle(BlockEvent event) {
+      int l1x,l1y,l1z,l2x,l2y,l2z;
+      l1x = loc1.getBlockX();
+      l1y = loc1.getBlockY();
+      l1z = loc1.getBlockZ();
+      l2x = loc2.getBlockX();
+      l2y = loc2.getBlockY();
+      l2z = loc2.getBlockZ();
+
+      int x = event.getBlock().getX();
+      int y = event.getBlock().getY();
+      int z = event.getBlock().getZ();
+
+      if (x >= Math.min(l1x, l2x) && x <= Math.max(l1x, l2x) &&
+          y >= Math.min(l1y, l2y) && y <= Math.max(l1y, l2y) &&
+          z >= Math.min(l1z, l2z) && z <= Math.max(l1z, l2z)) {
+        reload();
+      }
+    }
+  }
+
   public static class Floor implements Cloneable {
     private final JavaPlugin plugin;
     private final Elevator elevator;
@@ -232,8 +308,8 @@ public class Elevator {
     }
 
     Floor(JavaPlugin plugin, Elevator elevator,
-                 int floorLevel, Location loc,
-                 List<Location> doorLevers) {
+          int floorLevel, Location loc,
+          List<Location> doorLevers) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
@@ -264,6 +340,7 @@ public class Elevator {
         doorLevers.remove(doorLevers.size() - 1);
         return false;
       } else {
+        elevator.reload();
         return true;
       }
     }
@@ -287,6 +364,7 @@ public class Elevator {
             doorLevers.add(loc);
             return false;
           } else {
+            elevator.reload();
             return true;
           }
         }
@@ -320,38 +398,54 @@ public class Elevator {
     // 1 - up, -1 - down
     private byte direction = 0;
     private int currentFloor = 0;
+    private int delay = 0;
+    private static final int TICK_INTERVAL = 10;
 
     @Override
     public void run() {
+      if (delay > 0) {
+        delay--;
+        return;
+      }
+
       if (stops.isEmpty()) {
         task.cancel();
         active = false;
         return;
       }
 
-      moveToClosestFloor();
-
-      for (int stop: stops) {
-        stops.remove(stop);
-        moveToFloor(stop);
+      if (direction == 0) {
+        direction = -1;
+        stops.stream().map(floors::get)
+            .map(floor -> floor.getLocation().getBlockY())
+            .min(Comparator.comparingInt(y ->
+                Math.abs(y - masterBlock.getBlockY())))
+            .filter(y -> y > masterBlock.getBlockY())
+            .ifPresent(y -> direction = 1);
       }
 
+      if (stops.stream().map(floors::get)
+          .map(floor -> floor.getLocation().getBlockY())
+          .filter(y -> y == masterBlock.getBlockY())
+          .anyMatch(y -> y == masterBlock.getBlockY())) {
+        // open doors
+        if (stops.stream().map(floors::get)
+            .map(floor -> floor.getLocation().getBlockY())
+            .allMatch(y -> direction > 0 ? y <= masterBlock.getBlockY() :
+                y >= masterBlock.getBlockY())) {
+          direction = (byte)(direction == 1 ? -1 : 1);
+        }
+        delay = 5 * 20 / TICK_INTERVAL;
+        setCurrentFloor();
+        stops.remove(currentFloor);
+        return;
+      }
 
-      task.cancel();
-      active = false;
-    }
-
-    private void moveToClosestFloor() {
-      floors.entrySet().stream().min(Comparator.comparingInt(entry ->
-              Math.abs(entry.getValue().getLocation().getBlockY() -
-                  masterBlock.getBlockY())))
-          .ifPresent(entry -> moveToFloor(entry.getKey()));
-    }
-
-    private void moveToFloor(int floor) {
-      moveBlocks(floors.get(floor).getLocation().getBlockY() -
-          masterBlock.getBlockY());
-      currentFloor = floors.get(floor).getLocation().getBlockY();
+      if (direction == 1) {
+        moveBlocks(1);
+      } else {
+        moveBlocks(-1);
+      }
     }
 
     private void moveBlocks(int num) {
@@ -367,12 +461,12 @@ public class Elevator {
         }
       }
       if (num > 0) {
-        for (int i=0; i< elevatorBlocks.size(); i++) {
+        for (int i= elevatorBlocks.size()-1; i>=0; i--) {
           moveBlock(i, num);
           elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
         }
       } else if (num < 0) {
-        for (int i= elevatorBlocks.size()-1; i>=0; i--) {
+        for (int i=0; i< elevatorBlocks.size(); i++) {
           moveBlock(i, num);
           elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
         }
@@ -387,6 +481,18 @@ public class Elevator {
           elevatorBlocks.get(i).getZ()).getBlock().setBlockData(
           elevatorBlocks.get(i).getBlock().getBlockData());
       elevatorBlocks.get(i).getBlock().setType(Material.AIR);
+    }
+
+    private void setCurrentFloor() {
+      OptionalInt currentFloorOpt = floors.entrySet().stream().filter(
+              floor -> floor.getValue().getLocation().getBlockY() ==
+                  masterBlock.getBlockY())
+          .mapToInt(Map.Entry::getKey).findFirst();
+      if (currentFloorOpt.isPresent()) {
+        currentFloor = currentFloorOpt.getAsInt();
+      } else {
+        throw new RuntimeException("Cannot find current floor!");
+      }
     }
   }
 }

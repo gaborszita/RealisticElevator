@@ -306,6 +306,7 @@ public class Elevator {
     private final Elevator elevator;
     private final Location loc;
     private List<Location> doorLevers;
+    private Location callButton;
 
     private Floor(JavaPlugin plugin, Elevator elevator, Location loc) {
       this.plugin = plugin;
@@ -316,11 +317,12 @@ public class Elevator {
 
     Floor(JavaPlugin plugin, Elevator elevator,
           int floorLevel, Location loc,
-          List<Location> doorLevers) {
+          List<Location> doorLevers, Location callButton) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
       this.doorLevers = doorLevers;
+      this.callButton = callButton;
       elevator.addFloorNoSave(floorLevel, this);
     }
 
@@ -377,6 +379,21 @@ public class Elevator {
         }
       }
       return false;
+    }
+
+    public boolean setCallButton(Location callButton) {
+      Location oldCallButton = this.callButton;
+      this.callButton = callButton;
+      if (save()) {
+        return true;
+      } else {
+        this.callButton = oldCallButton;
+        return false;
+      }
+    }
+
+    public Location getCallButton() {
+      return callButton;
     }
 
     public boolean save() {

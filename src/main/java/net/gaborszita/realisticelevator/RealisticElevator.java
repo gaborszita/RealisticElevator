@@ -20,6 +20,7 @@ public class RealisticElevator extends JavaPlugin {
     commandManager.registerCommand(new CreateElevator(this, manager));
     commandManager.registerCommand(new DeleteElevator(manager));
     commandManager.registerCommand(new ElevatorInfo(manager));
+    commandManager.registerCommand(new GetFloorCallButton(manager));
     commandManager.registerCommand(new GoToFloor(manager));
     commandManager.registerCommand(new ListDoorLevers(manager));
     commandManager.registerCommand(new ListElevators(manager));
@@ -27,8 +28,10 @@ public class RealisticElevator extends JavaPlugin {
     commandManager.registerCommand(new ListFloors(manager));
     commandManager.registerCommand(new RemoveDoorLever(manager));
     commandManager.registerCommand(new RemoveFloor(manager));
+    commandManager.registerCommand(new RemoveFloorCallButton(manager));
     commandManager.registerCommand(new RemoveFloorDoorLever(manager));
     commandManager.registerCommand(new SetElevatorLocation(manager));
+    commandManager.registerCommand(new SetFloorCallButton(manager));
     Objects.requireNonNull(this.getCommand("elevator"))
         .setExecutor(new CommandListener(commandManager));
     getLogger().info("RealisticElevator enabled");

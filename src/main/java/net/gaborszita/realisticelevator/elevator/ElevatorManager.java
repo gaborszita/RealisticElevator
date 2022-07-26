@@ -122,6 +122,15 @@ public class ElevatorManager {
             JSONArray floorDoorLeverJson = new JSONArray(doorLeverArr);
             floorDoorLeversJson.put(floorDoorLeverJson);
           }
+          Location callButton = floor.getValue().getCallButton();
+          if (callButton == null) {
+            floorJson.put("callButton", JSONObject.NULL);
+          } else {
+            int[] callbuttonArr = { callButton.getBlockX(),
+                callButton.getBlockY(), callButton.getBlockZ() };
+            JSONArray callButtonJson = new JSONArray(callbuttonArr);
+            floorJson.put("callButton", callButtonJson);
+          }
           floorJson.put("doorLevers", floorDoorLeversJson);
           floorsJson.put(floorJson);
         }
@@ -197,8 +206,14 @@ public class ElevatorManager {
                 floorDoorLeverJson.getInt(0), floorDoorLeverJson.getInt(1),
                 floorDoorLeverJson.getInt(2)));
           }
+          Location callButton = null;
+          if (!floorJson.isNull("callButton")) {
+            JSONArray callButtonJson = floorJson.getJSONArray("callButton");
+            callButton = new Location(world, callButtonJson.getInt(0),
+                callButtonJson.getInt(1), callButtonJson.getInt(2));
+          }
           new Elevator.Floor(plugin, elevator, floorLevel, loc,
-              floorDoorLevers);
+              floorDoorLevers, callButton);
         }
         elevators.put(name, elevator);
       }

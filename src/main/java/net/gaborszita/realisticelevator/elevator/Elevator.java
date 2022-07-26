@@ -3,6 +3,9 @@ package net.gaborszita.realisticelevator.elevator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -32,6 +35,8 @@ public class Elevator {
   private boolean active = false;
   private Location masterBlock;
   private final ArrayList<Location> elevatorBlocks = new ArrayList<>();
+  private int currentFloor = 0;
+  private boolean doorsOpen = false;
   private int lowX, highX, lowZ, highZ, sizeY;
 
   private Elevator(JavaPlugin plugin, String name, ElevatorManager manager,
@@ -400,7 +405,6 @@ public class Elevator {
   private class Mover extends BukkitRunnable {
     // 1 - up, -1 - down
     private byte direction = 0;
-    private int currentFloor = 0;
     private int delay = 0;
     private static final int TICK_INTERVAL = 10;
 
@@ -410,6 +414,18 @@ public class Elevator {
         delay--;
         return;
       }
+
+      if (doorsOpen) {
+        if (stops.stream().map(floors::get)
+            .map(floor -> floor.getLocation().getBlockY())
+            .allMatch(y -> direction > 0 ? y <= masterBlock.getBlockY() :
+                y >= masterBlock.getBlockY())) {
+          direction = (byte)(direction == 1 ? -1 : 1);
+        }
+      }
+
+      // close doors if open
+      setDoorsState(false);
 
       if (stops.isEmpty()) {
         cancelTask();
@@ -431,15 +447,10 @@ public class Elevator {
               masterBlock.getBlockX() &&
               floor.getLocation().getBlockY() == masterBlock.getBlockY() &&
               floor.getLocation().getBlockZ() == masterBlock.getBlockZ())) {
-        // open doors
-        if (stops.stream().map(floors::get)
-            .map(floor -> floor.getLocation().getBlockY())
-            .allMatch(y -> direction > 0 ? y <= masterBlock.getBlockY() :
-                y >= masterBlock.getBlockY())) {
-          direction = (byte)(direction == 1 ? -1 : 1);
-        }
         delay = 5 * 20 / TICK_INTERVAL;
         setCurrentFloor();
+        // open doors
+        setDoorsState(true);
         stops.remove(currentFloor);
         return;
       }
@@ -479,16 +490,35 @@ public class Elevator {
           p.teleport(p.getLocation().add(0, num, 0));
         }
       }
+      ArrayList<Integer> leversIndex = new ArrayList<>();
+      ArrayList<BlockData> levers = new ArrayList<>();
+      for (int i=0; i< elevatorBlocks.size(); i++) {
+        if (elevatorBlocks.get(i).getBlock().getBlockData().getMaterial() ==
+            Material.LEVER) {
+          leversIndex.add(i);
+          levers.add(elevatorBlocks.get(i).getBlock().getBlockData());
+          elevatorBlocks.get(i).getBlock().setType(Material.AIR);
+          elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+        }
+      }
       if (num > 0) {
         for (int i= elevatorBlocks.size()-1; i>=0; i--) {
-          moveBlock(i, num);
-          elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+          if (!leversIndex.contains(i)) {
+            moveBlock(i, num);
+            elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+          }
         }
       } else if (num < 0) {
         for (int i=0; i< elevatorBlocks.size(); i++) {
-          moveBlock(i, num);
-          elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+          if (!leversIndex.contains(i)) {
+            moveBlock(i, num);
+            elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+          }
         }
+      }
+      for (int i=0; i<levers.size(); i++) {
+        elevatorBlocks.get(leversIndex.get(i)).getBlock().setBlockData
+         (levers.get(i));
       }
       masterBlock = masterBlock.add(0, num, 0);
     }
@@ -512,6 +542,64 @@ public class Elevator {
       } else {
         throw new RuntimeException("Cannot find current floor!");
       }
+    }
+
+    private void setDoorsState(boolean open) {
+      if (open == doorsOpen) {
+        return;
+      }
+
+      //placeElevatorDoorLevers();
+      Floor floor = floors.get(currentFloor);
+      if (floor.getDoorLevers().stream().map(doorLever ->
+              doorLever.getBlock().getBlockData().getMaterial())
+          .anyMatch(material -> material != Material.LEVER)) {
+        plugin.getLogger().warning("One of floor " + currentFloor + " of " +
+            "elevator" + name + "'s door levers material type not lever!");
+      }
+      if (doorLevers.stream().map(doorLever -> masterBlock.clone()
+              .add(doorLever)).map(Location::getBlock)
+          .anyMatch(block -> block.getBlockData().getMaterial() !=
+              Material.LEVER)) {
+        plugin.getLogger().warning("One of elevator " + name + "'s door " +
+            "levers material type not lever!");
+      }
+      floor.getDoorLevers().stream()
+          .map(Location::getBlock)
+          .filter(block -> block.getBlockData().getMaterial() ==
+              Material.LEVER)
+          .forEach(block -> {
+            Switch aSwitch = (Switch) block.getBlockData();
+            aSwitch.setPowered(open);
+            block.setBlockData(aSwitch);
+          });
+      doorLevers.stream().map(doorLever -> masterBlock.clone()
+              .add(doorLever)).map(Location::getBlock)
+          .filter(block -> block.getBlockData().getMaterial() ==
+              Material.LEVER)
+          .forEach(block -> {
+            Switch aSwitch = (Switch) block.getBlockData();
+            aSwitch.setPowered(open);
+            block.setBlockData(aSwitch);
+          });
+      doorsOpen = open;
+    }
+
+    private void placeElevatorDoorLevers() {
+      if (doorLevers.stream().map(doorLever -> masterBlock.clone()
+              .add(doorLever)).map(Location::getBlock)
+          .anyMatch(block -> block.getBlockData().getMaterial() !=
+              Material.LEVER || block.getBlockData().getMaterial() !=
+              Material.AIR)) {
+        plugin.getLogger().warning("One of elevator " + name + "'s door " +
+            "levers material type not lever or air!");
+      }
+
+      doorLevers.stream().map(doorLever -> masterBlock.clone()
+          .add(doorLever)).map(Location::getBlock)
+          .filter(block -> block.getBlockData().getMaterial() ==
+              Material.AIR)
+          .forEach(block -> block.setType(Material.LEVER));
     }
   }
 }

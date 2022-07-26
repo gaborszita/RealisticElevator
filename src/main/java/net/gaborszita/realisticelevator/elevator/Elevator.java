@@ -548,7 +548,6 @@ public class Elevator {
         return;
       }
 
-      //placeElevatorDoorLevers();
       Floor floor = floors.get(currentFloor);
       if (floor.getDoorLevers().stream().map(doorLever ->
               doorLever.getBlock().getBlockData().getMaterial())
@@ -582,23 +581,6 @@ public class Elevator {
             block.setBlockData(aSwitch);
           });
       doorsOpen = open;
-    }
-
-    private void placeElevatorDoorLevers() {
-      if (doorLevers.stream().map(doorLever -> masterBlock.clone()
-              .add(doorLever)).map(Location::getBlock)
-          .anyMatch(block -> block.getBlockData().getMaterial() !=
-              Material.LEVER || block.getBlockData().getMaterial() !=
-              Material.AIR)) {
-        plugin.getLogger().warning("One of elevator " + name + "'s door " +
-            "levers material type not lever or air!");
-      }
-
-      doorLevers.stream().map(doorLever -> masterBlock.clone()
-          .add(doorLever)).map(Location::getBlock)
-          .filter(block -> block.getBlockData().getMaterial() ==
-              Material.AIR)
-          .forEach(block -> block.setType(Material.LEVER));
     }
   }
 }

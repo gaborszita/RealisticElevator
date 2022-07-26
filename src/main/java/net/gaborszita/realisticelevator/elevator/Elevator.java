@@ -216,9 +216,11 @@ public class Elevator {
   }
 
   void unload() {
-    cancelTask();
-    HandlerList.unregisterAll(blockEventListener);
-    loaded = false;
+    if (loaded) {
+      cancelTask();
+      HandlerList.unregisterAll(blockEventListener);
+      loaded = false;
+    }
   }
 
   @Override

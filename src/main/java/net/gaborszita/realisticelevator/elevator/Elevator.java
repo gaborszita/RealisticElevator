@@ -3,7 +3,6 @@ package net.gaborszita.realisticelevator.elevator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Player;
@@ -498,21 +497,21 @@ public class Elevator {
           leversIndex.add(i);
           levers.add(elevatorBlocks.get(i).getBlock().getBlockData());
           elevatorBlocks.get(i).getBlock().setType(Material.AIR);
-          elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+          elevatorBlocks.get(i).add(0, num, 0);
         }
       }
       if (num > 0) {
         for (int i= elevatorBlocks.size()-1; i>=0; i--) {
           if (!leversIndex.contains(i)) {
             moveBlock(i, num);
-            elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+            elevatorBlocks.get(i).add(0, num, 0);
           }
         }
       } else if (num < 0) {
         for (int i=0; i< elevatorBlocks.size(); i++) {
           if (!leversIndex.contains(i)) {
             moveBlock(i, num);
-            elevatorBlocks.set(i, elevatorBlocks.get(i).add(0, num, 0));
+            elevatorBlocks.get(i).add(0, num, 0);
           }
         }
       }
@@ -520,7 +519,7 @@ public class Elevator {
         elevatorBlocks.get(leversIndex.get(i)).getBlock().setBlockData
          (levers.get(i));
       }
-      masterBlock = masterBlock.add(0, num, 0);
+      masterBlock.add(0, num, 0);
     }
 
     private void moveBlock(int i, int num) {

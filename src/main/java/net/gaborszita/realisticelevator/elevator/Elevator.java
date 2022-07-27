@@ -566,8 +566,11 @@ public class Elevator {
           p.teleport(p.getLocation().add(0, num, 0));
         }
       }
-      ArrayList<Integer> breakingBlocksIndex = new ArrayList<>();
-      ArrayList<BlockData> breakingBlocks = new ArrayList<>();
+      // handle blocks (lever and doors) that break when moved as other blocks
+      // separately
+      List<Integer> breakingBlocksIndex = new ArrayList<>();
+      List<BlockData> breakingBlocks = new ArrayList<>();
+      // put breaking blocks to the lists
       for (int i=0; i< elevatorBlocks.size(); i++) {
         Material material =
             elevatorBlocks.get(i).getBlock().getBlockData().getMaterial();

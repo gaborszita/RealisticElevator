@@ -525,7 +525,7 @@ public class Elevator {
       }
 
       if (direction == 1) {
-        if (masterBlock.getBlockY()+1 >
+        if (elevatorBlocks.get(elevatorBlocks.size() - 1).getBlockY()+1 >
             Math.max(loc1.getBlockY(), loc2.getBlockY())) {
           plugin.getLogger().warning("Elevator " + name + " was going up " +
               "and reached max height, but still didn't arrive at a stop! " +
@@ -535,7 +535,7 @@ public class Elevator {
           moveBlocks(1);
         }
       } else {
-        if (masterBlock.getBlockY()-1 <
+        if (elevatorBlocks.get(0).getBlockY()-1 <
             Math.min(loc1.getBlockY(), loc2.getBlockY())) {
           plugin.getLogger().warning("Elevator " + name + " was going down " +
               "and reached min height, but still didn't arrive at a stop! " +

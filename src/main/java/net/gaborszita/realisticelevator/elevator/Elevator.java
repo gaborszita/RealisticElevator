@@ -1,5 +1,6 @@
 package net.gaborszita.realisticelevator.elevator;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,9 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -154,6 +157,9 @@ public class Elevator {
       floors.put(floorLevel, oldFloor);
       return false;
     } else {
+      if (oldFloor != null) {
+        oldFloor.unload();
+      }
       reload();
       return true;
     }
@@ -170,6 +176,7 @@ public class Elevator {
       return false;
     } else {
       if (oldFloor != null) {
+        oldFloor.unload();
         reload();
       }
       return oldFloor != null;
@@ -303,17 +310,22 @@ public class Elevator {
     }
   }
 
-  public static class Floor implements Cloneable {
+  public static class Floor {
     private final JavaPlugin plugin;
     private final Elevator elevator;
     private final Location loc;
-    private List<Location> doorLevers;
+    private final int floorLevel;
+    private final List<Location> doorLevers;
     private Location callButton;
+    private CallButtonListener callButtonListener = null;
+    private boolean loaded = true;
 
-    private Floor(JavaPlugin plugin, Elevator elevator, Location loc) {
+    private Floor(JavaPlugin plugin, Elevator elevator,
+                  int floorLevel, Location loc) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
+      this.floorLevel = floorLevel;
       this.doorLevers = new ArrayList<>();
     }
 
@@ -323,14 +335,51 @@ public class Elevator {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
+      this.floorLevel = floorLevel;
       this.doorLevers = doorLevers;
       this.callButton = callButton;
+      reload();
       elevator.addFloorNoSave(floorLevel, this);
+    }
+
+    private void reload() {
+      if (!loaded) {
+        return;
+      }
+
+      if (callButton != null && callButtonListener == null) {
+        callButtonListener = new CallButtonListener();
+        plugin.getServer().getPluginManager().registerEvents(
+            callButtonListener, plugin);
+      } else if (callButton == null && callButtonListener != null) {
+        HandlerList.unregisterAll(callButtonListener);
+        callButtonListener = null;
+      }
+    }
+
+    private void unload() {
+      if (loaded) {
+        if (callButtonListener != null) {
+          HandlerList.unregisterAll(callButtonListener);
+          callButtonListener = null;
+        }
+        loaded = false;
+      }
+    }
+
+    @Override
+    protected void finalize() {
+      if (loaded) {
+        unload();
+        plugin.getLogger().warning("Floor " + floorLevel + " of elevator "
+            + elevator.getName() + " was not unloaded!");
+      }
     }
 
     public static boolean create(JavaPlugin plugin, Elevator elevator,
                                  int floorLevel, Location loc) {
-      return elevator.addFloor(floorLevel, new Floor(plugin, elevator, loc));
+      return elevator.addFloor(floorLevel, new Floor(plugin, elevator,
+          floorLevel, loc));
     }
 
     public Location getLocation() {
@@ -387,6 +436,7 @@ public class Elevator {
       Location oldCallButton = this.callButton;
       this.callButton = callButton;
       if (save()) {
+        reload();
         return true;
       } else {
         this.callButton = oldCallButton;
@@ -396,6 +446,28 @@ public class Elevator {
 
     public Location getCallButton() {
       return callButton;
+    }
+
+    private class CallButtonListener implements Listener {
+      @EventHandler
+      public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+          Location blockLoc = Objects.requireNonNull(event.getClickedBlock())
+              .getLocation();
+          if (blockLoc.getBlockX() == callButton.getBlockX() &&
+              blockLoc.getBlockY() == callButton.getBlockY() &&
+              blockLoc.getBlockZ() == callButton.getBlockZ() &&
+              blockLoc.getBlock().getBlockData() instanceof Switch) {
+            if (elevator.addStop(floorLevel)) {
+              event.getPlayer().sendMessage("Elevator coming to your floor. " +
+                  "Please wait.");
+            } else {
+              event.getPlayer().sendMessage(ChatColor.RED + "Failed to " +
+                  "queue elevator to come to your floor.");
+            }
+          }
+        }
+      }
     }
 
     public boolean save() {
@@ -491,35 +563,38 @@ public class Elevator {
           p.teleport(p.getLocation().add(0, num, 0));
         }
       }
-      ArrayList<Integer> leversIndex = new ArrayList<>();
-      ArrayList<BlockData> levers = new ArrayList<>();
+      ArrayList<Integer> breakingBlocksIndex = new ArrayList<>();
+      ArrayList<BlockData> breakingBlocks = new ArrayList<>();
       for (int i=0; i< elevatorBlocks.size(); i++) {
-        if (elevatorBlocks.get(i).getBlock().getBlockData().getMaterial() ==
-            Material.LEVER) {
-          leversIndex.add(i);
-          levers.add(elevatorBlocks.get(i).getBlock().getBlockData());
-          elevatorBlocks.get(i).getBlock().setType(Material.AIR);
-          elevatorBlocks.get(i).add(0, num, 0);
+        Material material =
+            elevatorBlocks.get(i).getBlock().getBlockData().getMaterial();
+        if (material == Material.LEVER || material == Material.IRON_DOOR) {
+          breakingBlocksIndex.add(i);
+          breakingBlocks.add(elevatorBlocks.get(i).getBlock().getBlockData());
         }
+      }
+      for (Integer index : breakingBlocksIndex) {
+        elevatorBlocks.get(index).getBlock().setType(Material.AIR);
+        elevatorBlocks.get(index).add(0, num, 0);
       }
       if (num > 0) {
         for (int i= elevatorBlocks.size()-1; i>=0; i--) {
-          if (!leversIndex.contains(i)) {
+          if (!breakingBlocksIndex.contains(i)) {
             moveBlock(i, num);
             elevatorBlocks.get(i).add(0, num, 0);
           }
         }
       } else if (num < 0) {
         for (int i=0; i< elevatorBlocks.size(); i++) {
-          if (!leversIndex.contains(i)) {
+          if (!breakingBlocksIndex.contains(i)) {
             moveBlock(i, num);
             elevatorBlocks.get(i).add(0, num, 0);
           }
         }
       }
-      for (int i=0; i<levers.size(); i++) {
-        elevatorBlocks.get(leversIndex.get(i)).getBlock().setBlockData
-         (levers.get(i));
+      for (int i=0; i<breakingBlocks.size(); i++) {
+        elevatorBlocks.get(breakingBlocksIndex.get(i)).getBlock().setBlockData
+         (breakingBlocks.get(i));
       }
       masterBlock.add(0, num, 0);
     }

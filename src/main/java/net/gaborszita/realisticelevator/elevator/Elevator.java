@@ -139,7 +139,7 @@ public class Elevator {
     Map<Integer, Floor> clonedMap = new HashMap<>();
     Set<Map.Entry<Integer, Floor>> entries = floors.entrySet();
     for (Map.Entry<Integer, Floor> entry: entries) {
-      clonedMap.put(entry.getKey(), entry.getValue().clone());
+      clonedMap.put(entry.getKey(), entry.getValue());
     }
     return clonedMap;
   }
@@ -400,23 +400,6 @@ public class Elevator {
 
     public boolean save() {
       return elevator.save();
-    }
-
-    @Override
-    public Floor clone() {
-      Floor clonedFloor;
-      try {
-        clonedFloor = (Floor)super.clone();
-      } catch (CloneNotSupportedException e) {
-        plugin.getLogger().severe("Failed to clone Floor"
-            + System.lineSeparator() + e);
-        throw new RuntimeException(e);
-      }
-      clonedFloor.doorLevers = new ArrayList<>();
-      for (Location loc: doorLevers) {
-        clonedFloor.doorLevers.add(loc.clone());
-      }
-      return clonedFloor;
     }
   }
 

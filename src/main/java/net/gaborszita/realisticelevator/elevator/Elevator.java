@@ -83,8 +83,8 @@ public class Elevator {
   public boolean setLocation(Location loc1, Location loc2) {
     Location oldLoc1 = this.loc1;
     Location oldLoc2 = this.loc2;
-    this.loc1 = loc1;
-    this.loc2 = loc2;
+    this.loc1 = loc1.clone();
+    this.loc2 = loc2.clone();
     if (save()) {
       reload();
       return true;
@@ -96,11 +96,11 @@ public class Elevator {
   }
 
   public Location getLoc1() {
-    return loc1;
+    return loc1.clone();
   }
 
   public Location getLoc2() {
-    return loc2;
+    return loc2.clone();
   }
 
   public List<Vector> getDoorLevers() {
@@ -112,7 +112,7 @@ public class Elevator {
   }
 
   public boolean addDoorLever(Vector lever) {
-    doorLevers.add(lever);
+    doorLevers.add(lever.clone());
     if (save()) {
       reload();
       return true;
@@ -133,7 +133,7 @@ public class Elevator {
       reload();
       return true;
     } else {
-      doorLevers.add(lever);
+      doorLevers.add(lever.clone());
       return false;
     }
   }
@@ -194,7 +194,8 @@ public class Elevator {
       throw new IllegalArgumentException("Elevator already exists: "
           + name);
     }
-    return new Elevator(plugin, name, manager, loc1, loc2).save();
+    return new Elevator(plugin, name, manager, loc1.clone(),
+        loc2.clone()).save();
   }
 
   public boolean addStop(int floor) {
@@ -379,11 +380,11 @@ public class Elevator {
     public static boolean create(JavaPlugin plugin, Elevator elevator,
                                  int floorLevel, Location loc) {
       return elevator.addFloor(floorLevel, new Floor(plugin, elevator,
-          floorLevel, loc));
+          floorLevel, loc.clone()));
     }
 
     public Location getLocation() {
-      return loc;
+      return loc.clone();
     }
 
     public List<Location> getDoorLevers() {
@@ -395,7 +396,7 @@ public class Elevator {
     }
 
     public boolean addDoorLever(Location loc) {
-      doorLevers.add(loc);
+      doorLevers.add(loc.clone());
       if (save()) {
         elevator.reload();
         return true;
@@ -434,7 +435,7 @@ public class Elevator {
 
     public boolean setCallButton(Location callButton) {
       Location oldCallButton = this.callButton;
-      this.callButton = callButton;
+      this.callButton = callButton.clone();
       if (save()) {
         reload();
         return true;

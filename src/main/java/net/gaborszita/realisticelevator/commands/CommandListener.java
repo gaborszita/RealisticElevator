@@ -5,18 +5,40 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 
+/**
+ * Main command listener. Implements the Bukkit CommandExecutor interface.
+ */
 public class CommandListener implements CommandExecutor {
+  /**
+   * Command manager.
+   */
   private final CommandManager manager;
 
-  public CommandListener(CommandManager manager) {
+  /**
+   * Constructor.
+   *
+   * @param manager Command manager.
+   */
+  public CommandListener(@Nonnull CommandManager manager) {
     this.manager = manager;
   }
 
+  /**
+   * Executes a command's associated command runner.
+   *
+   * @param sender Command sender.
+   * @param command Command.
+   * @param label Command label.
+   * @param args Command arguments.
+   * @return True
+   */
   @Override
-  public boolean onCommand(CommandSender sender, Command command,
-                           String label, String[] args) {
+  public boolean onCommand(@Nonnull CommandSender sender,
+                           @Nonnull Command command,
+                           @Nonnull String label, String[] args) {
     if (args.length==0) {
       String commands = "[" + String.join("|",
           manager.getRegisteredCommands()) + "]";

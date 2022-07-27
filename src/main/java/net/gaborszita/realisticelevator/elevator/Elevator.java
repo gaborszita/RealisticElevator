@@ -535,7 +535,7 @@ public class Elevator {
      * @param event Block placement event.
      */
     @EventHandler
-    public void onBlockPlaceEvent(BlockPlaceEvent event) {
+    public void onBlockPlaceEvent(@Nonnull BlockPlaceEvent event) {
       if (!event.isCancelled()) {
         handle(event);
       }
@@ -547,7 +547,7 @@ public class Elevator {
      * @param event Block removal event.
      */
     @EventHandler
-    public void onBlockDamageEvent(BlockDamageEvent event) {
+    public void onBlockDamageEvent(@Nonnull BlockDamageEvent event) {
       if (!event.isCancelled()) {
         handle(event);
       }
@@ -558,7 +558,7 @@ public class Elevator {
      *
      * @param event Event to handle.
      */
-    public void handle(BlockEvent event) {
+    public void handle(@Nonnull BlockEvent event) {
       int l1x,l1y,l1z,l2x,l2y,l2z;
       l1x = loc1.getBlockX();
       l1y = loc1.getBlockY();
@@ -857,7 +857,7 @@ public class Elevator {
        * @param event Player interact event.
        */
       @EventHandler
-      public void onPlayerInteractEvent(PlayerInteractEvent event) {
+      public void onPlayerInteractEvent(@Nonnull PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
           Location blockLoc = Objects.requireNonNull(event.getClickedBlock())
               .getLocation();

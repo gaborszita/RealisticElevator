@@ -56,7 +56,7 @@ public class CreateElevator implements CommandRunner {
         }
       }
     } else {
-      sender.sendMessage(userNeedsToRunCommandMessage);
+      sender.sendMessage(playerNeedsToRunCommandMessage);
     }
   }
 

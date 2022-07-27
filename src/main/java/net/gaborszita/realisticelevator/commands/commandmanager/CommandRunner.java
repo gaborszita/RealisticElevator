@@ -12,7 +12,8 @@ public interface CommandRunner {
   /**
    * Message to send if the player needs to run a command.
    */
-  String userNeedsToRunCommandMessage = "This command must be run by a player.";
+  String playerNeedsToRunCommandMessage =
+      "This command must be run by a player.";
 
   /**
    * Runs a command.

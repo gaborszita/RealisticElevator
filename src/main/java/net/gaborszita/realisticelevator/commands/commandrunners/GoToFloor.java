@@ -66,7 +66,7 @@ public class GoToFloor implements CommandRunner {
             "exist in elevator " + elevator.get().getName() + ".");
       }
     } else {
-      sender.sendMessage(userNeedsToRunCommandMessage);
+      sender.sendMessage(playerNeedsToRunCommandMessage);
     }
   }
 

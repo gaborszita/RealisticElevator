@@ -43,6 +43,11 @@ public class ElevatorManager {
   private final File elevatorsFile;
 
   /**
+   * Elevators file version number.
+   */
+  private static final int ELEVATORS_FILE_VERSION = 1;
+
+  /**
    * Constructor. Creates a new ElevatorManager instance.
    *
    * @param plugin The plugin instance.
@@ -122,7 +127,16 @@ public class ElevatorManager {
     }
     try {
       JSONObject main = new JSONObject(content);
-      // get the main object
+      // check version
+      int version = main.getInt("version");
+      if (version != ELEVATORS_FILE_VERSION) {
+        plugin.getLogger().severe("Unable to load elevators file. " +
+            "File version is incorrect. " +
+            "Expected: " + ELEVATORS_FILE_VERSION + " " +
+            "Found: " + version);
+        return false;
+      }
+      // get the main elevators object
       JSONArray elevatorsJson = main.getJSONArray("elevators");
       JSONObject elevatorJson = null;
       // search for the elevator to update in the file
@@ -253,7 +267,16 @@ public class ElevatorManager {
     }
     try {
       JSONObject main = new JSONObject(content);
-      // get main object
+      // check version
+      int version = main.getInt("version");
+      if (version != ELEVATORS_FILE_VERSION) {
+        plugin.getLogger().severe("Unable to load elevators file. " +
+            "File version is incorrect. " +
+            "Expected: " + ELEVATORS_FILE_VERSION + " " +
+            "Found: " + version);
+        return;
+      }
+      // get main elevators object
       JSONArray elevatorsJson = main.getJSONArray("elevators");
       for (int i=0; i<elevatorsJson.length(); i++) {
         JSONObject elevatorJson = elevatorsJson.getJSONObject(i);
@@ -338,7 +361,7 @@ public class ElevatorManager {
         elevatorsFile.getParentFile().mkdirs()) {
       JSONObject main = new JSONObject();
       // version number of the config file - reserved for future use
-      main.put("version", 1);
+      main.put("version", ELEVATORS_FILE_VERSION);
       // main elevators object
       JSONArray elevators = new JSONArray();
       main.put("elevators", elevators);

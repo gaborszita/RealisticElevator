@@ -37,7 +37,7 @@ public class Elevator {
   private boolean active = false;
   private Location masterBlock;
   private final ArrayList<Location> elevatorBlocks = new ArrayList<>();
-  private int currentFloor = 0;
+  private int currentFloor;
   private boolean doorsOpen = false;
   private int lowX, highX, lowZ, highZ, sizeY;
 

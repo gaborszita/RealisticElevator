@@ -433,7 +433,11 @@ public class Elevator {
 
     public boolean setCallButton(Location callButton) {
       Location oldCallButton = this.callButton;
-      this.callButton = callButton.clone();
+      if (callButton != null) {
+        this.callButton = callButton.clone();
+      } else {
+        this.callButton = null;
+      }
       if (save()) {
         reload();
         return true;

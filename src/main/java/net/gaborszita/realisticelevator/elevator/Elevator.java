@@ -85,13 +85,13 @@ public class Elevator {
     Location oldLoc2 = this.loc2;
     this.loc1 = loc1;
     this.loc2 = loc2;
-    if (!save()) {
+    if (save()) {
+      reload();
+      return true;
+    } else {
       this.loc1 = oldLoc1;
       this.loc2 = oldLoc2;
       return false;
-    } else {
-      reload();
-      return true;
     }
   }
 
@@ -113,12 +113,12 @@ public class Elevator {
 
   public boolean addDoorLever(Vector lever) {
     doorLevers.add(lever);
-    if (!save()) {
-      doorLevers.remove(doorLevers.size() - 1);
-      return false;
-    } else {
+    if (save()) {
       reload();
       return true;
+    } else {
+      doorLevers.remove(doorLevers.size() - 1);
+      return false;
     }
   }
 
@@ -129,12 +129,12 @@ public class Elevator {
   public boolean removeDoorLever(Vector lever) {
     if (!doorLevers.remove(lever)) {
       return false;
-    } else if (!save()) {
-      doorLevers.add(lever);
-      return false;
-    } else {
+    } else if (save()) {
       reload();
       return true;
+    } else {
+      doorLevers.add(lever);
+      return false;
     }
   }
 
@@ -153,15 +153,15 @@ public class Elevator {
 
   private boolean addFloor(int floorLevel, Floor floor) {
     Floor oldFloor = floors.put(floorLevel, floor);
-    if (!save()) {
-      floors.put(floorLevel, oldFloor);
-      return false;
-    } else {
+    if (save()) {
       if (oldFloor != null) {
         oldFloor.unload();
       }
       reload();
       return true;
+    } else {
+      floors.put(floorLevel, oldFloor);
+      return false;
     }
   }
 
@@ -171,15 +171,15 @@ public class Elevator {
 
   public boolean removeFloor(int floorLevel) {
     Floor oldFloor = floors.remove(floorLevel);
-    if (!save()) {
-      floors.put(floorLevel, oldFloor);
-      return false;
-    } else {
+    if (save()) {
       if (oldFloor != null) {
         oldFloor.unload();
         reload();
       }
       return oldFloor != null;
+    } else {
+      floors.put(floorLevel, oldFloor);
+      return false;
     }
   }
 
@@ -396,12 +396,12 @@ public class Elevator {
 
     public boolean addDoorLever(Location loc) {
       doorLevers.add(loc);
-      if (!save()) {
-        doorLevers.remove(doorLevers.size() - 1);
-        return false;
-      } else {
+      if (save()) {
         elevator.reload();
         return true;
+      } else {
+        doorLevers.remove(doorLevers.size() - 1);
+        return false;
       }
     }
 
@@ -420,12 +420,12 @@ public class Elevator {
         if (loc.getBlockX() == x && loc.getBlockY() == y
             && loc.getBlockZ() == z) {
           doorLevers.remove(loc);
-          if (!save()) {
-            doorLevers.add(loc);
-            return false;
-          } else {
+          if (save()) {
             elevator.reload();
             return true;
+          } else {
+            doorLevers.add(loc);
+            return false;
           }
         }
       }

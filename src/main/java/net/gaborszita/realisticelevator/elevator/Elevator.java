@@ -421,7 +421,8 @@ public class Elevator {
     stops.add(floor);
     if (!active && masterBlock != null) {
       active = true;
-      task = new Mover().runTaskTimer(plugin, 10, 10);
+      task = new Mover().runTaskTimer(plugin, Mover.TICK_INTERVAL,
+          Mover.TICK_INTERVAL);
     }
     return true;
   }

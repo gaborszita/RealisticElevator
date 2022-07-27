@@ -222,6 +222,9 @@ public class Elevator {
     if (loaded) {
       cancelTask();
       HandlerList.unregisterAll(blockEventListener);
+      for (Floor floor : floors.values()) {
+        floor.unload();
+      }
       loaded = false;
     }
   }

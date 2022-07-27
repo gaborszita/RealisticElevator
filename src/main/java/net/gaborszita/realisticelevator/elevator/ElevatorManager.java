@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,24 +18,60 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * This class is responsible for managing elevators.
+ */
 public class ElevatorManager {
+  /**
+   * Plugin instance. Used for logging and creating the elevators.
+   */
   private final JavaPlugin plugin;
+
+  /**
+   * The elevators.
+   */
   private Map<String, Elevator> elevators;
+
+  /**
+   * Name of the manager's config file.
+   */
   private static final String elevatorsFileName = "elevators.json";
+
+  /**
+   * Path of the manager's config file.
+   */
   private final File elevatorsFile;
 
-  public ElevatorManager(JavaPlugin plugin) {
+  /**
+   * Constructor. Creates a new ElevatorManager instance.
+   *
+   * @param plugin The plugin instance.
+   */
+  public ElevatorManager(@Nonnull JavaPlugin plugin) {
     this.plugin = plugin;
     elevatorsFile =  new File(plugin.getDataFolder(), elevatorsFileName);
     createElevatorsFileIfNotExists();
     loadElevators();
   }
 
-  public boolean containsElevator(String name) {
+  /**
+   * Checks if the manager contains an elevator with the given name.
+   *
+   * @param name Name of the elevator.
+   * @return True if the manager contains an elevator with the given name,
+   *         false otherwise.
+   */
+  public boolean containsElevator(@Nonnull String name) {
     return elevators.containsKey(name);
   }
 
-  public boolean deleteElevator(String name) {
+  /**
+   * Deletes an elevator from the manager.
+   *
+   * @param name Name of the elevator.
+   * @return True on success, false on failure.
+   */
+  public boolean deleteElevator(@Nonnull String name) {
     Elevator elevator = elevators.remove(name);
     if (elevator != null && saveElevator(name, null)) {
       elevator.unload();
@@ -43,14 +81,34 @@ public class ElevatorManager {
     }
   }
 
-  public Elevator getElevator(String name) {
+  /**
+   * Gets an elevator from the manager.
+   *
+   * @param name Name of the elevator.
+   * @return The elevator with the given name, or null if it does not exist.
+   */
+  @Nullable
+  public Elevator getElevator(@Nonnull String name) {
     return elevators.get(name);
   }
 
+  /**
+   * Gets all elevators from the manager.
+   *
+   * @return All elevators.
+   */
+  @Nonnull
   public Map<String, Elevator> getElevators() {
     return new HashMap<>(elevators);
   }
 
+  /**
+   * Saves an elevator to the config file.
+   *
+   * @param name Name of the elevator.
+   * @param elevator Elevator object.
+   * @return True on success, false on failure.
+   */
   boolean saveElevator(String name, Elevator elevator) {
     // load file
     String content;
@@ -177,6 +235,9 @@ public class ElevatorManager {
     return true;
   }
 
+  /**
+   * Loads all elevators from the config file.
+   */
   private void loadElevators() {
     elevators = new HashMap<>();
     // load file
@@ -260,12 +321,18 @@ public class ElevatorManager {
     }
   }
 
+  /**
+   * Creates the elevators file if it does not exist.
+   */
   private void createElevatorsFileIfNotExists() {
     if (!elevatorsFile.exists()) {
       createElevatorsFile();
     }
   }
 
+  /**
+   * Creates the elevators file.
+   */
   private void createElevatorsFile() {
     if (elevatorsFile.getParentFile().exists() ||
         elevatorsFile.getParentFile().mkdirs()) {

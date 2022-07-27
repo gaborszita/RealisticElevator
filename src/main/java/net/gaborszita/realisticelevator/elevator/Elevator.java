@@ -139,12 +139,7 @@ public class Elevator {
   }
 
   public Map<Integer, Floor> getFloors() {
-    Map<Integer, Floor> clonedMap = new HashMap<>();
-    Set<Map.Entry<Integer, Floor>> entries = floors.entrySet();
-    for (Map.Entry<Integer, Floor> entry: entries) {
-      clonedMap.put(entry.getKey(), entry.getValue());
-    }
-    return clonedMap;
+    return new HashMap<>(floors);
   }
 
   public Floor getFloor(int floor) {

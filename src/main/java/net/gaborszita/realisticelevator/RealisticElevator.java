@@ -8,7 +8,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
+/**
+ * Main class for the plugin.
+ */
 public class RealisticElevator extends JavaPlugin {
+  /**
+   * Called when the plugin is enabled.
+   */
   @Override
   public void onEnable() {
     getLogger().info("Loading RealisticElevator");
@@ -37,6 +43,9 @@ public class RealisticElevator extends JavaPlugin {
     getLogger().info("RealisticElevator enabled");
   }
 
+  /**
+   * Called when the plugin is disabled.
+   */
   @Override
   public void onDisable() {
     getLogger().info("RealisticElevator disabled");

@@ -6,6 +6,9 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class RemoveFloorCallButton implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -14,7 +17,8 @@ public class RemoveFloorCallButton implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 2) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -31,7 +35,8 @@ public class RemoveFloorCallButton implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + elevatorName + " " +
           "does not exist.");
     } else {
-      Elevator elevator = manager.getElevator(elevatorName);
+      Elevator elevator =
+          Objects.requireNonNull(manager.getElevator(elevatorName));
       Elevator.Floor floor = elevator.getFloor(floorLevel);
       if (floor == null) {
         sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
@@ -50,21 +55,25 @@ public class RemoveFloorCallButton implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "removefloorcallbutton";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Removes a floor call button from an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [elevator name] [floor number]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n" +

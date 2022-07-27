@@ -2,29 +2,37 @@ package net.gaborszita.realisticelevator.commands.commandmanager;
 
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manages commands. This class is responsible for calling te associated
+ * command runner for each command.
+ */
 public class CommandManager {
   private final Map<String, CommandRunner> commands = new HashMap<>();
 
   /**
    * Registers a new command. If a command has already been registered, it
    * will be assigned the new runner.
-   * @param runner Executor assigned to command
+   *
+   * @param runner Runner assigned to command.
    */
-  public void registerCommand(CommandRunner runner) {
+  public void registerCommand(@Nonnull CommandRunner runner) {
     commands.put(runner.getCommand(), runner);
   }
 
   /**
    * Runs a registered command.
-   * @param sender Command sender
-   * @param command Command to execute
-   * @param args Command arguments
+   *
+   * @param sender Command sender.
+   * @param command Command to execute.
+   * @param args Command arguments.
+   * @throws IllegalArgumentException If command is not registered.
    */
-  public void runCommand(CommandSender sender, String command,
-                            String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String command, @Nonnull String[] args) {
     CommandRunner runner = commands.get(command);
     if (runner == null) {
       throw new IllegalArgumentException("Command not registered: "
@@ -33,11 +41,21 @@ public class CommandManager {
     runner.runCommand(sender, args);
   }
 
-
-  public boolean isCommandRegistered(String command) {
+  /**
+   * Checks if a command is registered.
+   *
+   * @param command Command to check.
+   * @return True if command is registered, false otherwise.
+   */
+  public boolean isCommandRegistered(@Nonnull String command) {
     return commands.containsKey(command);
   }
 
+  /**
+   * Returns a list of registered commands.
+   *
+   * @return List of registered commands.
+   */
   public String[] getRegisteredCommands() {
     return commands.keySet().toArray(new String[0]);
   }

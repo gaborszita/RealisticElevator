@@ -5,6 +5,7 @@ import net.gaborszita.realisticelevator.elevator.Elevator;
 import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class ListElevators implements CommandRunner {
@@ -15,7 +16,8 @@ public class ListElevators implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 0) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -25,21 +27,25 @@ public class ListElevators implements CommandRunner {
         elevators.keySet()));
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "list";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Lists all elevators on this server.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand();
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "";

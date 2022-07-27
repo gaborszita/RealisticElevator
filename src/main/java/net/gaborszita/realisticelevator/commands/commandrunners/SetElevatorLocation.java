@@ -7,6 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class SetElevatorLocation implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -15,7 +18,8 @@ public class SetElevatorLocation implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 7) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -35,7 +39,7 @@ public class SetElevatorLocation implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
           "does not exist.");
     } else {
-      Elevator elevator = manager.getElevator(name);
+      Elevator elevator = Objects.requireNonNull(manager.getElevator(name));
       Location loc1 = new Location(elevator.getLoc1().getWorld(), coords[0],
           coords[1], coords[2]);
       Location loc2 = new Location(elevator.getLoc1().getWorld(), coords[3],
@@ -50,22 +54,26 @@ public class SetElevatorLocation implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "setlocation";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Sets the location of an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand()  + " [name] [x1] [y1] [z1] [x2] [y2] " +
         "[z2]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[name] - Name of the elevator\n"

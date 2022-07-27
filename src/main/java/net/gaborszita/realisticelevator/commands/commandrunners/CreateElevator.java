@@ -9,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nonnull;
+
 public class CreateElevator implements CommandRunner {
   private final JavaPlugin plugin;
   private final ElevatorManager manager;
@@ -19,7 +21,8 @@ public class CreateElevator implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 7) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -57,22 +60,26 @@ public class CreateElevator implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "create";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Creates a new elevator in a cuboid area.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator create " + getCommand() + " [name] [x1] [y1] [z1] [x2]" +
         " [y2] [z2]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[name] - Name of the elevator\n"

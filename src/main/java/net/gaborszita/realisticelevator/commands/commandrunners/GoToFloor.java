@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class GoToFloor implements CommandRunner {
@@ -18,7 +19,8 @@ public class GoToFloor implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 1) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -68,21 +70,25 @@ public class GoToFloor implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "goto";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Goes to a floor. Player has to be in an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator goto [floor]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[floor] - Floor to go to";

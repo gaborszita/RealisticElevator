@@ -6,6 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.Vector;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class RemoveDoorLever implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -14,7 +17,8 @@ public class RemoveDoorLever implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 4) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -33,10 +37,12 @@ public class RemoveDoorLever implements CommandRunner {
     if (!manager.containsElevator(name)) {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + name
           + " does not exist.");
-    } else if (!manager.getElevator(name).containsDoorLever(vector)) {
+    } else if (!Objects.requireNonNull(manager.getElevator(name))
+        .containsDoorLever(vector)) {
       sender.sendMessage(ChatColor.RED + "Door lever does not exist on " +
           "elevator " + name + " .");
-    } else if (manager.getElevator(name).removeDoorLever(vector)) {
+    } else if (Objects.requireNonNull(manager.getElevator(name))
+        .removeDoorLever(vector)) {
       sender.sendMessage("Door lever removed from floor " + name + ".");
     } else {
       sender.sendMessage(ChatColor.RED + "Error removing door lever from "
@@ -45,21 +51,25 @@ public class RemoveDoorLever implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "removedoorlever";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Removes a door lever from an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [name] [x] [y] [z]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[name] - Name of the elevator to remove the door lever from.\n"

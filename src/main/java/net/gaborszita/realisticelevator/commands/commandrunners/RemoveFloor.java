@@ -5,6 +5,9 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class RemoveFloor implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -13,7 +16,8 @@ public class RemoveFloor implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 2) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -30,10 +34,12 @@ public class RemoveFloor implements CommandRunner {
     if (!manager.containsElevator(name)) {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
           "does not exist.");
-    } else if (!manager.getElevator(name).containsFloor(floorLevel)) {
+    } else if (!Objects.requireNonNull(manager.getElevator(name))
+        .containsFloor(floorLevel)) {
       sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does not " +
           "exist.");
-    } else if (manager.getElevator(name).removeFloor(floorLevel)) {
+    } else if (Objects.requireNonNull(manager.getElevator(name))
+        .removeFloor(floorLevel)) {
       sender.sendMessage("Floor " + floorLevel + " removed from elevator " +
           name + ".");
     } else {
@@ -43,21 +49,25 @@ public class RemoveFloor implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "removefloor";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Removes a floor from an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [elevator name] [floor number]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n"

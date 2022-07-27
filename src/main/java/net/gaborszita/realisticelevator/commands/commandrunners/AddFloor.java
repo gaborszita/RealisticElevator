@@ -8,6 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class AddFloor implements CommandRunner {
   private final JavaPlugin plugin;
   private final ElevatorManager manager;
@@ -18,7 +21,8 @@ public class AddFloor implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 5) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -47,7 +51,7 @@ public class AddFloor implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
           "does not exist.");
     } else {
-      Elevator elevator = manager.getElevator(name);
+      Elevator elevator = Objects.requireNonNull(manager.getElevator(name));
       Location loc = new Location(elevator.getLoc1().getWorld(), coords[0],
           coords[1], coords[2]);
       if (elevator.getFloor(floorLevel) != null) {
@@ -64,22 +68,26 @@ public class AddFloor implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "addfloor";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Adds a floor to an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [elevator name] [floor number] [x]" +
         " [y] [z]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n"

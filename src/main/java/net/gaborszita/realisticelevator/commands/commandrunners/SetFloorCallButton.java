@@ -7,6 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class SetFloorCallButton implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -15,7 +18,8 @@ public class SetFloorCallButton implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 5) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -43,7 +47,8 @@ public class SetFloorCallButton implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + elevatorName + " " +
           "does not exist.");
     } else {
-      Elevator elevator = manager.getElevator(elevatorName);
+      Elevator elevator =
+          Objects.requireNonNull(manager.getElevator(elevatorName));
       Elevator.Floor floor = elevator.getFloor(floorLevel);
       if (floor == null) {
         sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
@@ -59,22 +64,26 @@ public class SetFloorCallButton implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "setfloorcallbutton";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Sets the call button for a floor.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [elevator name] [floor number] " +
         "[x] [y] [z]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n" +

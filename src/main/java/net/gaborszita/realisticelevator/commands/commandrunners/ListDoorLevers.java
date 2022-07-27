@@ -5,6 +5,8 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListDoorLevers implements CommandRunner {
@@ -15,7 +17,8 @@ public class ListDoorLevers implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 1) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -26,28 +29,33 @@ public class ListDoorLevers implements CommandRunner {
           "exist");
     } else {
       sender.sendMessage("Door levers of elevator " + name + ":\n" +
-          manager.getElevator(name).getDoorLevers().stream()
+          Objects.requireNonNull(manager.getElevator(name))
+              .getDoorLevers().stream()
               .map(v -> v.getBlockX() + " " + v.getBlockY() + " "
                   + v.getBlockZ())
               .collect(Collectors.joining("\n")));
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "listdoorlevers";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Lists all door levers for an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [name]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
     return "[name] - the name of the elevator";

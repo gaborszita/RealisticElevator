@@ -5,6 +5,8 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListFloorDoorLevers implements CommandRunner {
@@ -15,7 +17,8 @@ public class ListFloorDoorLevers implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 2) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -31,13 +34,16 @@ public class ListFloorDoorLevers implements CommandRunner {
     if (!manager.containsElevator(name)) {
       sender.sendMessage(ChatColor.RED + "Elevator " + name +
           " does not " + "exist");
-    } else if (manager.getElevator(name).getFloor(floor) == null) {
+    } else if (Objects.requireNonNull(manager.getElevator(name))
+        .getFloor(floor) == null) {
       sender.sendMessage(ChatColor.RED + "Floor " + floor + " does not " +
           "exist");
     } else {
       sender.sendMessage("Door levers of elevator " + name +
           " floor " + floor + " :\n" +
-          manager.getElevator(name).getFloor(floor)
+          Objects.requireNonNull(
+              Objects.requireNonNull(manager.getElevator(name))
+                  .getFloor(floor))
           .getDoorLevers().stream()
           .map(v -> v.getBlockX() + " " + v.getBlockY() + " "
               + v.getBlockZ())
@@ -46,21 +52,25 @@ public class ListFloorDoorLevers implements CommandRunner {
   }
 
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "listfloordoorlevers";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
     return "Lists door levers for an elevator floor.";
   }
 
+    @Nonnull
     @Override
   public String getUsage() {
     return "/elevator " + getCommand() + " [elevator name] [floor number]";
   }
 
+    @Nonnull
     @Override
   public String getArguments() {
     return "[elevator name] - the name of the elevator\n" +

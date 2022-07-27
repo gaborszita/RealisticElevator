@@ -5,6 +5,8 @@ import net.gaborszita.realisticelevator.elevator.ElevatorManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nonnull;
+
 public class DeleteElevator implements CommandRunner {
   private final ElevatorManager manager;
 
@@ -13,7 +15,8 @@ public class DeleteElevator implements CommandRunner {
   }
 
   @Override
-  public void runCommand(CommandSender sender, String[] args) {
+  public void runCommand(@Nonnull CommandSender sender,
+                         @Nonnull String[] args) {
     if (args.length != 1) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -31,21 +34,25 @@ public class DeleteElevator implements CommandRunner {
     }
   }
 
+  @Nonnull
   @Override
   public String getCommand() {
     return "delete";
   }
 
+  @Nonnull
   @Override
   public String getDescription() {
       return "Deletes an elevator.";
   }
 
+  @Nonnull
   @Override
   public String getUsage() {
       return "/elevator " + getCommand() + " [name]";
   }
 
+  @Nonnull
   @Override
   public String getArguments() {
       return "[name] - Name of the elevator to delete";

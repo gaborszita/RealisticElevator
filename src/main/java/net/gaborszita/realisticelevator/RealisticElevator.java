@@ -40,6 +40,42 @@ public class RealisticElevator extends JavaPlugin {
     commandManager.registerCommand(new SetFloorCallButton(manager));
     Objects.requireNonNull(this.getCommand("elevator"))
         .setExecutor(new CommandListener(commandManager));
+
+    // Used for generating command documentation in CSV format:
+    /*try (FileWriter writer = new FileWriter("elevatordocs.txt")) {
+      List<CommandRunner> runners = new ArrayList<>();
+      runners.add(new AddDoorLever(manager));
+      runners.add(new AddFloor(this, manager));
+      runners.add(new AddFloorDoorLever(manager));
+      runners.add(new CreateElevator(this, manager));
+      runners.add(new DeleteElevator(manager));
+      runners.add(new ElevatorInfo(manager));
+      runners.add(new GetFloorCallButton(manager));
+      runners.add(new GoToFloor(manager));
+      runners.add(new ListDoorLevers(manager));
+      runners.add(new ListElevators(manager));
+      runners.add(new ListFloorDoorLevers(manager));
+      runners.add(new ListFloors(manager));
+      runners.add(new RemoveDoorLever(manager));
+      runners.add(new RemoveFloor(manager));
+      runners.add(new RemoveFloorCallButton(manager));
+      runners.add(new RemoveFloorDoorLever(manager));
+      runners.add(new SetElevatorLocation(manager));
+      runners.add(new SetFloorCallButton(manager));
+      writer.write("Command,Description,Usage,Arguments,Permission" +
+          System.lineSeparator());
+      for (CommandRunner runner : runners) {
+        writer.write(String.format("/elevator %s,%s,%s,%s,%s%s",
+            runner.getCommand(),
+            runner.getDescription(),
+            runner.getUsage(),
+            runner.getArguments().replace("\n", "<br>"),
+            runner.getPermission(),
+            System.lineSeparator()));
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }*/
     getLogger().info("RealisticElevator enabled");
   }
 

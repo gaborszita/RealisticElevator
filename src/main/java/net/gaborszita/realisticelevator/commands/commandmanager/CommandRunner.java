@@ -74,6 +74,11 @@ public interface CommandRunner {
   @Nonnull
   String getArguments();
 
+  /**
+   * Returns the permissions required to run the command.
+   *
+   * @return Permissions required to run the command.
+   */
   @Nonnull
   default String getPermission() {
     return "realisticelevator." + getCommand();

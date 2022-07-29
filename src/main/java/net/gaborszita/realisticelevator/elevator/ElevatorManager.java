@@ -310,7 +310,7 @@ public class ElevatorManager {
         for (int x=0; x<floorsJson.length(); x++) {
           JSONObject floorJson = floorsJson.getJSONObject(x);
           // floor number
-          int floorLevel = floorJson.getInt("floor");
+          int floorNumber = floorJson.getInt("floor");
           // floor location
           JSONArray locJson = floorJson.getJSONArray("loc");
           Location loc = new Location(world, locJson.getInt(0),
@@ -332,7 +332,7 @@ public class ElevatorManager {
             callButton = new Location(world, callButtonJson.getInt(0),
                 callButtonJson.getInt(1), callButtonJson.getInt(2));
           }
-          new Elevator.Floor(plugin, elevator, floorLevel, loc,
+          new Elevator.Floor(plugin, elevator, floorNumber, loc,
               floorDoorLevers, callButton);
         }
         elevators.put(name, elevator);

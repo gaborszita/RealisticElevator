@@ -23,9 +23,9 @@ public class RemoveFloor implements CommandRunner {
       return;
     }
     String name = args[0];
-    int floorLevel;
+    int floorNumber;
     try {
-      floorLevel = Integer.parseInt(args[1]);
+      floorNumber = Integer.parseInt(args[1]);
     } catch (NumberFormatException e) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -35,15 +35,15 @@ public class RemoveFloor implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
           "does not exist.");
     } else if (!Objects.requireNonNull(manager.getElevator(name))
-        .containsFloor(floorLevel)) {
-      sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does not " +
+        .containsFloor(floorNumber)) {
+      sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does not " +
           "exist.");
     } else if (Objects.requireNonNull(manager.getElevator(name))
-        .removeFloor(floorLevel)) {
-      sender.sendMessage("Floor " + floorLevel + " removed from elevator " +
+        .removeFloor(floorNumber)) {
+      sender.sendMessage("Floor " + floorNumber + " removed from elevator " +
           name + ".");
     } else {
-      sender.sendMessage(ChatColor.RED + "Error removing floor " + floorLevel +
+      sender.sendMessage(ChatColor.RED + "Error removing floor " + floorNumber +
           " from elevator " + name + ".\n"
           + "Please check server logs for more information.");
     }
@@ -71,6 +71,6 @@ public class RemoveFloor implements CommandRunner {
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n"
-        + "[floor number] - Number/level of the floor to remove";
+        + "[floor number] - Number of the floor to remove";
   }
 }

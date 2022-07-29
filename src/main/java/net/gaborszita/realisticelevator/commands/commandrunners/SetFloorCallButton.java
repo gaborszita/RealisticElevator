@@ -25,9 +25,9 @@ public class SetFloorCallButton implements CommandRunner {
       return;
     }
     String elevatorName = args[0];
-    int floorLevel;
+    int floorNumber;
     try {
-      floorLevel = Integer.parseInt(args[1]);
+      floorNumber = Integer.parseInt(args[1]);
     } catch (NumberFormatException e) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -49,16 +49,16 @@ public class SetFloorCallButton implements CommandRunner {
     } else {
       Elevator elevator =
           Objects.requireNonNull(manager.getElevator(elevatorName));
-      Elevator.Floor floor = elevator.getFloor(floorLevel);
+      Elevator.Floor floor = elevator.getFloor(floorNumber);
       if (floor == null) {
-        sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
+        sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does " +
             "not exist.");
       } else if (floor.setCallButton(new Location(
           elevator.getLoc1().getWorld(), coords[0], coords[1], coords[2]))) {
-        sender.sendMessage("Call button added to floor " + floorLevel + ".");
+        sender.sendMessage("Call button added to floor " + floorNumber + ".");
       } else {
         sender.sendMessage(ChatColor.RED + "Error adding call button to " +
-            "floor " + floorLevel + ".\n" +
+            "floor " + floorNumber + ".\n" +
             "Please check server logs for more information.");
       }
     }

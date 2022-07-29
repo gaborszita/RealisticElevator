@@ -52,12 +52,12 @@ public class ListDoorLevers implements CommandRunner {
   @Nonnull
   @Override
   public String getUsage() {
-    return "/elevator " + getCommand() + " [name]";
+    return "/elevator " + getCommand() + " [elevator name]";
   }
 
   @Nonnull
   @Override
   public String getArguments() {
-    return "[name] - the name of the elevator";
+    return "[elevator name] - the name of the elevator";
   }
 }

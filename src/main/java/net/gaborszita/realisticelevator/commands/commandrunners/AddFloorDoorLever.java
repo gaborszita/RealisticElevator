@@ -26,9 +26,9 @@ public class AddFloorDoorLever implements CommandRunner {
     }
     String elevatorName = args[0];
 
-    int floorLevel;
+    int floorNumber;
     try {
-      floorLevel = Integer.parseInt(args[1]);
+      floorNumber = Integer.parseInt(args[1]);
     } catch (NumberFormatException e) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -50,16 +50,16 @@ public class AddFloorDoorLever implements CommandRunner {
     } else {
       Elevator elevator =
           Objects.requireNonNull(manager.getElevator(elevatorName));
-      Elevator.Floor floor = elevator.getFloor(floorLevel);
+      Elevator.Floor floor = elevator.getFloor(floorNumber);
       if (floor == null) {
-        sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does " +
+        sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does " +
             "not exist.");
       } else if (floor.containsDoorLever(coords[0], coords[1], coords[2])) {
         sender.sendMessage(ChatColor.RED + "Door lever at " + coords[0] +
             " " + coords[1] + " " + coords[2] + " already exists.");
       } else if (floor.addDoorLever(new Location(elevator.getLoc1().getWorld(),
           coords[0], coords[1], coords[2]))) {
-        sender.sendMessage("Door level added to floor " + floorLevel + ".");
+        sender.sendMessage("Door level added to floor " + floorNumber + ".");
       } else {
         sender.sendMessage(ChatColor.RED + "Error adding door level to " +
             "floor.\n" +

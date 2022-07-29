@@ -74,6 +74,6 @@ public class ListFloorDoorLevers implements CommandRunner {
     @Override
   public String getArguments() {
     return "[elevator name] - the name of the elevator\n" +
-        "[floor number] - the number/level of the floor";
+        "[floor number] - Floor number";
   }
 }

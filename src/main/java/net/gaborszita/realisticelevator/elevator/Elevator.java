@@ -326,8 +326,8 @@ public class Elevator {
    * @param floor Floor object.
    * @return True on success, false on failure.
    */
-  private boolean addFloor(int floorLevel, @Nonnull Floor floor) {
-    Floor oldFloor = floors.put(floorLevel, floor);
+  private boolean addFloor(int floorNumber, @Nonnull Floor floor) {
+    Floor oldFloor = floors.put(floorNumber, floor);
     if (save()) {
       if (oldFloor != null) {
         oldFloor.unload();
@@ -335,7 +335,7 @@ public class Elevator {
       reload();
       return true;
     } else {
-      floors.put(floorLevel, oldFloor);
+      floors.put(floorNumber, oldFloor);
       return false;
     }
   }
@@ -343,21 +343,21 @@ public class Elevator {
   /**
    * Checks if the elevator contains a floor.
    *
-   * @param floorLevel Floor number.
+   * @param floorNumber Floor number.
    * @return True if the elevator contains the floor, false otherwise.
    */
-  public boolean containsFloor(int floorLevel) {
-    return floors.containsKey(floorLevel);
+  public boolean containsFloor(int floorNumber) {
+    return floors.containsKey(floorNumber);
   }
 
   /**
    * Removes a floor from the elevator.
    *
-   * @param floorLevel Floor number.
+   * @param floorNumber Floor number.
    * @return True on success, false on failure.
    */
-  public boolean removeFloor(int floorLevel) {
-    Floor oldFloor = floors.remove(floorLevel);
+  public boolean removeFloor(int floorNumber) {
+    Floor oldFloor = floors.remove(floorNumber);
     if (save()) {
       if (oldFloor != null) {
         oldFloor.unload();
@@ -365,7 +365,7 @@ public class Elevator {
       }
       return oldFloor != null;
     } else {
-      floors.put(floorLevel, oldFloor);
+      floors.put(floorNumber, oldFloor);
       return false;
     }
   }
@@ -376,11 +376,11 @@ public class Elevator {
    * {@link Elevator.Floor(JavaPlugin, Elevator, int, Location, List,
    * Location)}.
    *
-   * @param floorLevel Floor number.
+   * @param floorNumber Floor number.
    * @param floor Floor object.
    */
-  private void addFloorNoSave(int floorLevel, @Nonnull Floor floor) {
-    floors.put(floorLevel, floor);
+  private void addFloorNoSave(int floorNumber, @Nonnull Floor floor) {
+    floors.put(floorNumber, floor);
   }
 
   /**
@@ -604,7 +604,7 @@ public class Elevator {
     /**
      * Floor number of the elevator.
      */
-    private final int floorLevel;
+    private final int floorNumber;
 
     /**
      * Door levers of the floor.
@@ -632,15 +632,15 @@ public class Elevator {
      *
      * @param plugin Plugin instance.
      * @param elevator Elevator the floor is in.
-     * @param floorLevel Floor number of the elevator.
+     * @param floorNumber Floor number of the elevator.
      * @param loc Location of the floor.
      */
     private Floor(JavaPlugin plugin, Elevator elevator,
-                  int floorLevel, Location loc) {
+                  int floorNumber, Location loc) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
-      this.floorLevel = floorLevel;
+      this.floorNumber = floorNumber;
       this.doorLevers = new ArrayList<>();
     }
 
@@ -650,22 +650,22 @@ public class Elevator {
      *
      * @param plugin Plugin instance.
      * @param elevator Elevator the floor is in.
-     * @param floorLevel Floor number of the elevator.
+     * @param floorNumber Floor number of the elevator.
      * @param loc Location of the floor.
      * @param doorLevers Door levers of the floor.
      * @param callButton Call button of the floor.
      */
     Floor(@Nonnull JavaPlugin plugin, @Nonnull Elevator elevator,
-          int floorLevel, @Nonnull Location loc,
+          int floorNumber, @Nonnull Location loc,
           @Nonnull List<Location> doorLevers, @Nullable Location callButton) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
-      this.floorLevel = floorLevel;
+      this.floorNumber = floorNumber;
       this.doorLevers = doorLevers;
       this.callButton = callButton;
       reload();
-      elevator.addFloorNoSave(floorLevel, this);
+      elevator.addFloorNoSave(floorNumber, this);
     }
 
     /**
@@ -709,7 +709,7 @@ public class Elevator {
     protected void finalize() {
       if (loaded) {
         unload();
-        plugin.getLogger().warning("Floor " + floorLevel + " of elevator "
+        plugin.getLogger().warning("Floor " + floorNumber + " of elevator "
             + elevator.getName() + " was not unloaded!");
       }
     }
@@ -719,15 +719,15 @@ public class Elevator {
      *
      * @param plugin Plugin instance.
      * @param elevator Elevator the floor is in.
-     * @param floorLevel Floor number of the elevator.
+     * @param floorNumber Floor number of the elevator.
      * @param loc Location of the floor.
      * @return True on success, false in failure.
      */
     public static boolean create(@Nonnull JavaPlugin plugin,
-                                 @Nonnull Elevator elevator, int floorLevel,
+                                 @Nonnull Elevator elevator, int floorNumber,
                                  @Nonnull Location loc) {
-      return elevator.addFloor(floorLevel, new Floor(plugin, elevator,
-          floorLevel, loc.clone()));
+      return elevator.addFloor(floorNumber, new Floor(plugin, elevator,
+          floorNumber, loc.clone()));
     }
 
     /**
@@ -866,7 +866,7 @@ public class Elevator {
               blockLoc.getBlockY() == callButton.getBlockY() &&
               blockLoc.getBlockZ() == callButton.getBlockZ() &&
               blockLoc.getBlock().getBlockData() instanceof Switch) {
-            if (elevator.addStop(floorLevel)) {
+            if (elevator.addStop(floorNumber)) {
               event.getPlayer().sendMessage("Elevator coming to your floor. " +
                   "Please wait.");
             } else {

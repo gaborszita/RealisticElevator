@@ -26,9 +26,9 @@ public class GetFloorCallButton implements CommandRunner {
     }
 
     String name = args[0];
-    int floorLevel;
+    int floorNumber;
     try {
-      floorLevel = Integer.parseInt(args[1]);
+      floorNumber = Integer.parseInt(args[1]);
     } catch (NumberFormatException e) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -39,18 +39,18 @@ public class GetFloorCallButton implements CommandRunner {
           "does not exist.");
     } else {
       Elevator elevator = Objects.requireNonNull(manager.getElevator(name));
-      if (!elevator.containsFloor(floorLevel)) {
-      sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " does not " +
+      if (!elevator.containsFloor(floorNumber)) {
+      sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does not " +
           "exist.");
-      } else if (Objects.requireNonNull(elevator.getFloor(floorLevel))
+      } else if (Objects.requireNonNull(elevator.getFloor(floorNumber))
           .getCallButton() == null) {
-        sender.sendMessage("Floor " + floorLevel + " has no call " +
+        sender.sendMessage("Floor " + floorNumber + " has no call " +
             "button.");
       } else {
         Location loc =
-            Objects.requireNonNull(elevator.getFloor(floorLevel))
+            Objects.requireNonNull(elevator.getFloor(floorNumber))
                 .getCallButton();
-        sender.sendMessage("Floor " + floorLevel + " call button: " +
+        sender.sendMessage("Floor " + floorNumber + " call button: " +
             Objects.requireNonNull(loc)
                 .getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ());
       }
@@ -79,6 +79,6 @@ public class GetFloorCallButton implements CommandRunner {
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n" +
-        "[floor number] - Number of the floor";
+        "[floor number] - Floor number";
   }
 }

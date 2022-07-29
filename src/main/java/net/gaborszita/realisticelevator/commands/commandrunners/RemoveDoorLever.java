@@ -66,13 +66,14 @@ public class RemoveDoorLever implements CommandRunner {
   @Nonnull
   @Override
   public String getUsage() {
-    return "/elevator " + getCommand() + " [name] [x] [y] [z]";
+    return "/elevator " + getCommand() + " [elevator name] [x] [y] [z]";
   }
 
   @Nonnull
   @Override
   public String getArguments() {
-    return "[name] - Name of the elevator to remove the door lever from.\n"
+    return "[elevator name] - Name of the elevator to remove the door lever " +
+        "from.\n"
         + "[x] [y] [z] - Coordinates of the lever relative to the elevator's "
         + "master block (block of the elevator whose coordinates are the "
         + "smallest).";

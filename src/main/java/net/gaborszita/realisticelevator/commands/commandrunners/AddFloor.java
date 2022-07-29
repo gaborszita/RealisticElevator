@@ -28,9 +28,9 @@ public class AddFloor implements CommandRunner {
       return;
     }
     String name = args[0];
-    int floorLevel;
+    int floorNumber;
     try {
-      floorLevel = Integer.parseInt(args[1]);
+      floorNumber = Integer.parseInt(args[1]);
     } catch (NumberFormatException e) {
       sender.sendMessage(getInvalidUsageMessage());
       return;
@@ -54,11 +54,11 @@ public class AddFloor implements CommandRunner {
       Elevator elevator = Objects.requireNonNull(manager.getElevator(name));
       Location loc = new Location(elevator.getLoc1().getWorld(), coords[0],
           coords[1], coords[2]);
-      if (elevator.getFloor(floorLevel) != null) {
-        sender.sendMessage(ChatColor.RED + "Floor " + floorLevel + " already " +
+      if (elevator.getFloor(floorNumber) != null) {
+        sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " already " +
             "exists.");
-      } else if (Elevator.Floor.create(plugin, elevator, floorLevel, loc)) {
-        sender.sendMessage("Floor " + floorLevel + " added to elevator " +
+      } else if (Elevator.Floor.create(plugin, elevator, floorNumber, loc)) {
+        sender.sendMessage("Floor " + floorNumber + " added to elevator " +
             name + ".");
       } else {
         sender.sendMessage(ChatColor.RED + "Error adding floor " +
@@ -91,7 +91,7 @@ public class AddFloor implements CommandRunner {
   @Override
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n"
-        + "[floor number] - Floor number/level\n"
+        + "[floor number] - Floor number\n"
         + "[x] [y] [z] - Coordinates of the lever relative to the elevator's "
         + "master block (block of the elevator whose coordinates are the "
         + "smallest).";

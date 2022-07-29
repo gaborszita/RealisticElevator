@@ -9,4 +9,4 @@ If you think you can add something useful to the project and have already implem
 - **Write Javadocs for all methods.** If you created a new method, or updated one, please write/update the Javadoc for it.
 - **Write comments for your methods.** If your method is short and its Javadoc clearly explains what it does, there is no need for comments in your method. However, if you have a large method, say more than 50 lines, consider adding a few comments to it. This is an open-source project, so we want to make sure everyone can understand what the code does.
 
-This is all. Happy coding!
+That is all. Happy coding!

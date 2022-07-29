@@ -1,12 +1,14 @@
 package net.gaborszita.realisticelevator.commands;
 
 import net.gaborszita.realisticelevator.commands.commandmanager.CommandManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Main command listener. Implements the Bukkit CommandExecutor interface.
@@ -47,7 +49,13 @@ public class CommandListener implements CommandExecutor {
     } else {
       String[] commandArgs = Arrays.copyOfRange(args, 1, args.length);
       if (manager.isCommandRegistered(args[0])) {
-        manager.runCommand(sender, args[0], commandArgs);
+        if (sender.hasPermission(Objects.requireNonNull(manager
+            .getCommandRunner(args[0])).getPermission())) {
+          manager.runCommand(sender, args[0], commandArgs);
+        } else {
+          sender.sendMessage(ChatColor.RED + "You don't have permission to " +
+              "use this command.");
+        }
       } else {
         sender.sendMessage("No such command: " + args[0]);
       }

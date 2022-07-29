@@ -3,6 +3,7 @@ package net.gaborszita.realisticelevator.commands.commandmanager;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,7 +57,20 @@ public class CommandManager {
    *
    * @return List of registered commands.
    */
+  @Nonnull
   public String[] getRegisteredCommands() {
     return commands.keySet().toArray(new String[0]);
+  }
+
+  /**
+   * Returns the command runner for a command.
+   *
+   * @param command Command.
+   * @return Command runner for the command or null if command is not
+   *         registered.
+   */
+  @Nullable
+  public CommandRunner getCommandRunner(@Nonnull String command) {
+    return commands.get(command);
   }
 }

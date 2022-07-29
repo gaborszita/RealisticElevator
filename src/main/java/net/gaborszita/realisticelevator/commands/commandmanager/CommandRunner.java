@@ -55,6 +55,11 @@ public interface CommandRunner {
   @Nonnull
   String getArguments();
 
+  @Nonnull
+  default String getPermission() {
+    return "realisticelevator." + getCommand();
+  }
+
   /**
    * Returns the invalid usage message.
    *

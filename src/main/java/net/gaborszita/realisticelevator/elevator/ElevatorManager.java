@@ -106,6 +106,13 @@ public class ElevatorManager {
   }
 
   /**
+   * Unloads all elevators in the manager;
+   */
+  public void unloadAll() {
+    elevators.values().forEach(Elevator::unload);
+  }
+
+  /**
    * Gets an elevator from the manager.
    *
    * @param name Name of the elevator.

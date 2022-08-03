@@ -32,13 +32,18 @@ import java.util.Objects;
  */
 public class RealisticElevator extends JavaPlugin {
   /**
+   * Elevator manager instance of the plugin.
+   */
+  private ElevatorManager manager;
+
+  /**
    * Called when the plugin is enabled.
    */
   @Override
   public void onEnable() {
     getLogger().info("Loading RealisticElevator");
     CommandManager commandManager = new CommandManager();
-    ElevatorManager manager = new ElevatorManager(this);
+    manager = new ElevatorManager(this);
     commandManager.registerCommand(new AddDoorLever(manager));
     commandManager.registerCommand(new AddFloor(this, manager));
     commandManager.registerCommand(new AddFloorDoorLever(manager));
@@ -103,6 +108,7 @@ public class RealisticElevator extends JavaPlugin {
    */
   @Override
   public void onDisable() {
+    manager.unloadAll();
     getLogger().info("RealisticElevator disabled");
   }
 }

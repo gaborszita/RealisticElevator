@@ -64,7 +64,7 @@ public class ElevatorManager {
   /**
    * Elevators file version number.
    */
-  private static final int ELEVATORS_FILE_VERSION = 1;
+  private static final int ELEVATORS_FILE_VERSION = 2;
 
   /**
    * Constructor. Creates a new ElevatorManager instance.

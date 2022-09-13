@@ -28,10 +28,10 @@ import org.bukkit.util.Vector;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class AddDoorLever implements CommandRunner {
+public class RemoveDoor implements CommandRunner {
   private final ElevatorManager manager;
 
-  public AddDoorLever(ElevatorManager manager) {
+  public RemoveDoor(ElevatorManager manager) {
     this.manager = manager;
   }
 
@@ -52,22 +52,19 @@ public class AddDoorLever implements CommandRunner {
         return;
       }
     }
-    Vector loc = new Vector(coords[0], coords[1], coords[2]);
+    Vector vector = new Vector(coords[0], coords[1], coords[2]);
     if (!manager.containsElevator(name)) {
-      sender.sendMessage(ChatColor.RED + "Elevator with name " + name + " " +
-          "does not exist.");
+      sender.sendMessage(ChatColor.RED + "Elevator with name " + name
+          + " does not exist.");
+    } else if (!Objects.requireNonNull(manager.getElevator(name))
+        .containsDoor(vector)) {
+      sender.sendMessage(ChatColor.RED + "Door does not exist on " +
+          "elevator " + name + " .");
     } else if (Objects.requireNonNull(manager.getElevator(name))
-        .containsDoorLever(loc)) {
-      sender.sendMessage(ChatColor.RED + "Door lever at " +
-          loc.getBlockX() + " " +
-          loc.getBlockY() + " " +
-          loc.getBlockZ() + " " +
-          "already exists.");
-    } else if (Objects.requireNonNull(manager.getElevator(name))
-        .addDoorLever(loc)) {
-      sender.sendMessage("Door lever added to elevator " + name + ".");
+        .removeDoor(vector)) {
+      sender.sendMessage("Door removed from floor " + name + ".");
     } else {
-      sender.sendMessage(ChatColor.RED + "Error adding door lever to "
+      sender.sendMessage(ChatColor.RED + "Error removing door from "
           + "elevator " + name + ".\n"
           + "Please check server logs for more information.");
     }
@@ -76,13 +73,13 @@ public class AddDoorLever implements CommandRunner {
   @Nonnull
   @Override
   public String getCommand() {
-    return "adddoorlever";
+    return "removedoor";
   }
 
   @Nonnull
   @Override
   public String getDescription() {
-    return "Adds a door lever to an elevator.";
+    return "Removes a door from an elevator.";
   }
 
   @Nonnull
@@ -94,8 +91,9 @@ public class AddDoorLever implements CommandRunner {
   @Nonnull
   @Override
   public String getArguments() {
-    return "[elevator name] - Name of the elevator to add the door lever to.\n"
-        + "[x] [y] [z] - Coordinates of the lever relative to the elevator's "
+    return "[elevator name] - Name of the elevator to remove the door " +
+        "from.\n"
+        + "[x] [y] [z] - Coordinates of the door relative to the elevator's "
         + "master block (block of the elevator whose coordinates are the "
         + "smallest).";
   }

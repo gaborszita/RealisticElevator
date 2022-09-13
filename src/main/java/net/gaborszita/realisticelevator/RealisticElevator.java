@@ -44,23 +44,23 @@ public class RealisticElevator extends JavaPlugin {
     getLogger().info("Loading RealisticElevator");
     CommandManager commandManager = new CommandManager();
     manager = new ElevatorManager(this);
-    commandManager.registerCommand(new AddDoorLever(manager));
+    commandManager.registerCommand(new AddDoor(manager));
     commandManager.registerCommand(new AddFloor(this, manager));
-    commandManager.registerCommand(new AddFloorDoorLever(manager));
+    commandManager.registerCommand(new AddFloorDoor(manager));
     commandManager.registerCommand(new CreateElevator(this, manager));
     commandManager.registerCommand(new DeleteElevator(manager));
     commandManager.registerCommand(new ElevatorInfo(manager));
     commandManager.registerCommand(new GetFloorCallButton(manager));
     commandManager.registerCommand(new GetMasterBlock(manager));
     commandManager.registerCommand(new GoToFloor(manager));
-    commandManager.registerCommand(new ListDoorLevers(manager));
+    commandManager.registerCommand(new ListDoors(manager));
     commandManager.registerCommand(new ListElevators(manager));
-    commandManager.registerCommand(new ListFloorDoorLevers(manager));
+    commandManager.registerCommand(new ListFloorDoors(manager));
     commandManager.registerCommand(new ListFloors(manager));
-    commandManager.registerCommand(new RemoveDoorLever(manager));
+    commandManager.registerCommand(new RemoveDoor(manager));
     commandManager.registerCommand(new RemoveFloor(manager));
     commandManager.registerCommand(new RemoveFloorCallButton(manager));
-    commandManager.registerCommand(new RemoveFloorDoorLever(manager));
+    commandManager.registerCommand(new RemoveFloorDoor(manager));
     commandManager.registerCommand(new SetElevatorLocation(manager));
     commandManager.registerCommand(new SetFloorCallButton(manager));
     Objects.requireNonNull(this.getCommand("elevator"))
@@ -69,23 +69,23 @@ public class RealisticElevator extends JavaPlugin {
     // Used for generating command documentation in CSV format:
     /*try (FileWriter writer = new FileWriter("elevatordocs.txt")) {
       List<CommandRunner> runners = new ArrayList<>();
-      runners.add(new AddDoorLever(manager));
+      runners.add(new AddDoor(manager));
       runners.add(new AddFloor(this, manager));
-      runners.add(new AddFloorDoorLever(manager));
+      runners.add(new AddFloorDoor(manager));
       runners.add(new CreateElevator(this, manager));
       runners.add(new DeleteElevator(manager));
       runners.add(new ElevatorInfo(manager));
       runners.add(new GetFloorCallButton(manager));
       runners.add(new GetMasterBlock(manager));
       runners.add(new GoToFloor(manager));
-      runners.add(new ListDoorLevers(manager));
+      runners.add(new ListDoors(manager));
       runners.add(new ListElevators(manager));
-      runners.add(new ListFloorDoorLevers(manager));
+      runners.add(new ListFloorDoors(manager));
       runners.add(new ListFloors(manager));
-      runners.add(new RemoveDoorLever(manager));
+      runners.add(new RemoveDoor(manager));
       runners.add(new RemoveFloor(manager));
       runners.add(new RemoveFloorCallButton(manager));
-      runners.add(new RemoveFloorDoorLever(manager));
+      runners.add(new RemoveFloorDoor(manager));
       runners.add(new SetElevatorLocation(manager));
       runners.add(new SetFloorCallButton(manager));
       writer.write("Command,Description,Usage,Arguments,Permission" +

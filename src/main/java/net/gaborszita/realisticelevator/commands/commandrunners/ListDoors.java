@@ -28,10 +28,10 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ListDoorLevers implements CommandRunner {
+public class ListDoors implements CommandRunner {
   private final ElevatorManager manager;
 
-  public ListDoorLevers(ElevatorManager manager) {
+  public ListDoors(ElevatorManager manager) {
     this.manager = manager;
   }
 
@@ -47,9 +47,9 @@ public class ListDoorLevers implements CommandRunner {
       sender.sendMessage(ChatColor.RED + "Elevator " + name + " does not " +
           "exist");
     } else {
-      sender.sendMessage("Door levers of elevator " + name + ":\n" +
+      sender.sendMessage("Doors of elevator " + name + ":\n" +
           Objects.requireNonNull(manager.getElevator(name))
-              .getDoorLevers().stream()
+              .getDoors().stream()
               .map(v -> v.getBlockX() + " " + v.getBlockY() + " "
                   + v.getBlockZ())
               .collect(Collectors.joining("\n")));
@@ -59,13 +59,13 @@ public class ListDoorLevers implements CommandRunner {
   @Nonnull
   @Override
   public String getCommand() {
-    return "listdoorlevers";
+    return "listdoors";
   }
 
   @Nonnull
   @Override
   public String getDescription() {
-    return "Lists all door levers for an elevator.";
+    return "Lists all doors for an elevator.";
   }
 
   @Nonnull

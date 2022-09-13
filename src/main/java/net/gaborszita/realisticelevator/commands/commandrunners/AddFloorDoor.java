@@ -29,10 +29,10 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class AddFloorDoorLever implements CommandRunner {
+public class AddFloorDoor implements CommandRunner {
   private final ElevatorManager manager;
 
-  public AddFloorDoorLever(ElevatorManager manager) {
+  public AddFloorDoor(ElevatorManager manager) {
     this.manager = manager;
   }
 
@@ -73,10 +73,10 @@ public class AddFloorDoorLever implements CommandRunner {
       if (floor == null) {
         sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does " +
             "not exist.");
-      } else if (floor.containsDoorLever(coords[0], coords[1], coords[2])) {
-        sender.sendMessage(ChatColor.RED + "Door lever at " + coords[0] +
+      } else if (floor.containsDoor(coords[0], coords[1], coords[2])) {
+        sender.sendMessage(ChatColor.RED + "Door at " + coords[0] +
             " " + coords[1] + " " + coords[2] + " already exists.");
-      } else if (floor.addDoorLever(new Location(elevator.getLoc1().getWorld(),
+      } else if (floor.addDoor(new Location(elevator.getLoc1().getWorld(),
           coords[0], coords[1], coords[2]))) {
         sender.sendMessage("Door level added to floor " + floorNumber + ".");
       } else {
@@ -90,13 +90,13 @@ public class AddFloorDoorLever implements CommandRunner {
   @Nonnull
   @Override
   public String getCommand() {
-    return "addfloordoorlever";
+    return "addfloordoor";
   }
 
   @Nonnull
   @Override
   public String getDescription() {
-    return "Adds a door lever to an elevator floor.";
+    return "Adds a door to an elevator floor.";
   }
 
   @Nonnull
@@ -111,6 +111,6 @@ public class AddFloorDoorLever implements CommandRunner {
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n" +
         "[floor number] - Floor number\n" +
-        "[x] [y] [z] - Coordinates of the door lever\n";
+        "[x] [y] [z] - Coordinates of the door\n";
   }
 }

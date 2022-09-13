@@ -204,17 +204,17 @@ public class ElevatorManager {
             loc2.getBlockZ()};
         JSONArray loc2Json = new JSONArray(loc2Arr);
         elevatorJson.put("loc2", loc2Json);
-        // door levers of the elevator
-        // iterate through the door levers of the elevator and add them to the
+        // doors of the elevator
+        // iterate through the doors of the elevator and add them to the
         // file
-        JSONArray doorLeversJson = new JSONArray();
-        for (Vector doorLever : elevator.getDoorLevers()) {
-          int[] doorLeverArr = {doorLever.getBlockX(),
-              doorLever.getBlockY(), doorLever.getBlockZ()};
-          JSONArray doorLeverJson = new JSONArray(doorLeverArr);
-          doorLeversJson.put(doorLeverJson);
+        JSONArray doorsJson = new JSONArray();
+        for (Vector door : elevator.getDoors()) {
+          int[] doorArr = {door.getBlockX(),
+              door.getBlockY(), door.getBlockZ()};
+          JSONArray doorJson = new JSONArray(doorArr);
+          doorsJson.put(doorJson);
         }
-        elevatorJson.put("doorLevers", doorLeversJson);
+        elevatorJson.put("doors", doorsJson);
         // floors of the elevator
         JSONArray floorsJson = new JSONArray();
         Set<Map.Entry<Integer, Elevator.Floor>> floors = elevator.getFloors()
@@ -229,13 +229,13 @@ public class ElevatorManager {
           int[] locArr = {loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()};
           JSONArray locJson = new JSONArray(locArr);
           floorJson.put("loc", locJson);
-          // door levers of the floor
-          JSONArray floorDoorLeversJson = new JSONArray();
-          for (Location doorLever : floor.getValue().getDoorLevers()) {
-            int[] doorLeverArr = {doorLever.getBlockX(),
-                doorLever.getBlockY(), doorLever.getBlockZ()};
-            JSONArray floorDoorLeverJson = new JSONArray(doorLeverArr);
-            floorDoorLeversJson.put(floorDoorLeverJson);
+          // doors of the floor
+          JSONArray floorDoorsJson = new JSONArray();
+          for (Location door : floor.getValue().getDoors()) {
+            int[] doorArr = {door.getBlockX(),
+                door.getBlockY(), door.getBlockZ()};
+            JSONArray floorDoorJson = new JSONArray(doorArr);
+            floorDoorsJson.put(floorDoorJson);
           }
           // call button of the floor
           Location callButton = floor.getValue().getCallButton();
@@ -249,7 +249,7 @@ public class ElevatorManager {
             JSONArray callButtonJson = new JSONArray(callButtonArr);
             floorJson.put("callButton", callButtonJson);
           }
-          floorJson.put("doorLevers", floorDoorLeversJson);
+          floorJson.put("doors", floorDoorsJson);
           // add the floor to the floors of the elevator
           floorsJson.put(floorJson);
         }
@@ -321,16 +321,16 @@ public class ElevatorManager {
         Location loc2 = new Location(world, loc2Json.getInt(0),
             loc2Json.getInt(1),
             loc2Json.getInt(2));
-        // door levers of the elevator
-        JSONArray doorLeversJson = elevatorJson.getJSONArray("doorLevers");
-        List<Vector> doorLevers = new ArrayList<>();
-        for (int x=0; x<doorLeversJson.length(); x++) {
-          JSONArray doorLeverJson = doorLeversJson.getJSONArray(x);
-          doorLevers.add(new Vector(doorLeverJson.getInt(0),
-              doorLeverJson.getInt(1), doorLeverJson.getInt(2)));
+        // doors of the elevator
+        JSONArray doorsJson = elevatorJson.getJSONArray("doors");
+        List<Vector> doors = new ArrayList<>();
+        for (int x=0; x<doorsJson.length(); x++) {
+          JSONArray doorJson = doorsJson.getJSONArray(x);
+          doors.add(new Vector(doorJson.getInt(0),
+              doorJson.getInt(1), doorJson.getInt(2)));
         }
         Elevator elevator = new Elevator(plugin, name, this, loc1, loc2,
-            doorLevers);
+            doors);
         // floors
         JSONArray floorsJson = elevatorJson.getJSONArray("floors");
         for (int x=0; x<floorsJson.length(); x++) {
@@ -341,14 +341,14 @@ public class ElevatorManager {
           JSONArray locJson = floorJson.getJSONArray("loc");
           Location loc = new Location(world, locJson.getInt(0),
               locJson.getInt(1), locJson.getInt(2));
-          // door levers of the floor
-          JSONArray floorDoorLeversJson = floorJson.getJSONArray("doorLevers");
-          List<Location> floorDoorLevers = new ArrayList<>();
-          for (int j=0; j<floorDoorLeversJson.length(); j++) {
-            JSONArray floorDoorLeverJson = floorDoorLeversJson.getJSONArray(j);
-            floorDoorLevers.add(new Location(world,
-                floorDoorLeverJson.getInt(0), floorDoorLeverJson.getInt(1),
-                floorDoorLeverJson.getInt(2)));
+          // doors of the floor
+          JSONArray floorDoorsJson = floorJson.getJSONArray("doors");
+          List<Location> floorDoors = new ArrayList<>();
+          for (int j=0; j<floorDoorsJson.length(); j++) {
+            JSONArray floorDoorJson = floorDoorsJson.getJSONArray(j);
+            floorDoors.add(new Location(world,
+                floorDoorJson.getInt(0), floorDoorJson.getInt(1),
+                floorDoorJson.getInt(2)));
           }
           // call button of the floor
           Location callButton = null;
@@ -359,7 +359,7 @@ public class ElevatorManager {
                 callButtonJson.getInt(1), callButtonJson.getInt(2));
           }
           new Elevator.Floor(plugin, elevator, floorNumber, loc,
-              floorDoorLevers, callButton);
+              floorDoors, callButton);
         }
         elevators.put(name, elevator);
       }

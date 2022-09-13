@@ -24,15 +24,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -75,9 +73,9 @@ public class Elevator {
   private Location loc2;
 
   /**
-   * List of door levers of the elevator.
+   * List of doors of the elevator.
    */
-  private final List<Vector> doorLevers;
+  private final List<Vector> doors;
 
   /**
    * Floors of the elevator. The key if the floor number, and the value is
@@ -163,7 +161,7 @@ public class Elevator {
     this.manager = manager;
     this.loc1 = loc1;
     this.loc2 = loc2;
-    this.doorLevers = new ArrayList<>();
+    this.doors = new ArrayList<>();
     this.floors = new HashMap<>();
     stops = new HashSet<>();
     findBlocks();
@@ -182,18 +180,18 @@ public class Elevator {
    * @param manager Elevator manager.
    * @param loc1 First location of the elevator area cuboid region.
    * @param loc2 Second location of the elevator area cuboid region.
-   * @param doorLevers List of door levers.
+   * @param doors List of doors.
    */
   Elevator(@Nonnull JavaPlugin plugin, @Nonnull String name,
            @Nonnull ElevatorManager manager,
            @Nonnull Location loc1, @Nonnull Location loc2,
-           @Nonnull List<Vector> doorLevers) {
+           @Nonnull List<Vector> doors) {
     this.plugin = plugin;
     this.name = name;
     this.manager = manager;
     this.loc1 = loc1;
     this.loc2 = loc2;
-    this.doorLevers = doorLevers;
+    this.doors = doors;
     this.floors = new HashMap<>();
     stops = new HashSet<>();
     findBlocks();
@@ -256,63 +254,63 @@ public class Elevator {
   }
 
   /**
-   * Getter for the door levers of the elevator.
+   * Getter for the doors of the elevator.
    *
-   * @return List of the door levers of the elevator.
+   * @return List of the doors of the elevator.
    */
   @Nonnull
-  public List<Vector> getDoorLevers() {
+  public List<Vector> getDoors() {
     List<Vector> clonedList = new ArrayList<>();
-    for (Vector lever: doorLevers) {
-      clonedList.add(lever.clone());
+    for (Vector door: doors) {
+      clonedList.add(door.clone());
     }
     return clonedList;
   }
 
   /**
-   * Adds a door lever to the elevator.
+   * Adds a door to the elevator.
    *
-   * @param lever Coordinate of door lever relative to the master block.
+   * @param door Coordinate of door relative to the master block.
    * @return True on success, false on failure.
    * @see #masterBlock
    */
-  public boolean addDoorLever(@Nonnull Vector lever) {
-    doorLevers.add(lever.clone());
+  public boolean addDoor(@Nonnull Vector door) {
+    doors.add(door.clone());
     if (save()) {
       reload();
       return true;
     } else {
-      doorLevers.remove(doorLevers.size() - 1);
+      doors.remove(doors.size() - 1);
       return false;
     }
   }
 
   /**
-   * Checks if the elevator contains a door lever.
+   * Checks if the elevator contains a door.
    *
-   * @param lever Coordinate of door lever relative to the master block.
-   * @return True if the elevator contains the door lever, false otherwise.
+   * @param door Coordinate of door relative to the master block.
+   * @return True if the elevator contains the door, false otherwise.
    * @see #masterBlock
    */
-  public boolean containsDoorLever(@Nonnull Vector lever) {
-    return doorLevers.contains(lever);
+  public boolean containsDoor(@Nonnull Vector door) {
+    return doors.contains(door);
   }
 
   /**
-   * Removes a door lever from the elevator.
+   * Removes a door from the elevator.
    *
-   * @param lever Coordinate of door lever relative to the master block.
+   * @param door Coordinate of door relative to the master block.
    * @return True on success, false on failure.
    * @see #masterBlock
    */
-  public boolean removeDoorLever(@Nonnull Vector lever) {
-    if (!doorLevers.remove(lever)) {
+  public boolean removeDoor(@Nonnull Vector door) {
+    if (!doors.remove(door)) {
       return false;
     } else if (save()) {
       reload();
       return true;
     } else {
-      doorLevers.add(lever.clone());
+      doors.add(door.clone());
       return false;
     }
   }
@@ -636,9 +634,9 @@ public class Elevator {
     private final int floorNumber;
 
     /**
-     * Door levers of the floor.
+     * Doors of the floor.
      */
-    private final List<Location> doorLevers;
+    private final List<Location> doors;
 
     /**
      * Call button.
@@ -670,7 +668,7 @@ public class Elevator {
       this.elevator = elevator;
       this.loc = loc;
       this.floorNumber = floorNumber;
-      this.doorLevers = new ArrayList<>();
+      this.doors = new ArrayList<>();
     }
 
     /**
@@ -681,17 +679,17 @@ public class Elevator {
      * @param elevator Elevator the floor is in.
      * @param floorNumber Floor number of the elevator.
      * @param loc Location of the floor.
-     * @param doorLevers Door levers of the floor.
+     * @param doors Doors of the floor.
      * @param callButton Call button of the floor.
      */
     Floor(@Nonnull JavaPlugin plugin, @Nonnull Elevator elevator,
           int floorNumber, @Nonnull Location loc,
-          @Nonnull List<Location> doorLevers, @Nullable Location callButton) {
+          @Nonnull List<Location> doors, @Nullable Location callButton) {
       this.plugin = plugin;
       this.elevator = elevator;
       this.loc = loc;
       this.floorNumber = floorNumber;
-      this.doorLevers = doorLevers;
+      this.doors = doors;
       this.callButton = callButton;
       reload();
       elevator.addFloorNoSave(floorNumber, this);
@@ -770,48 +768,48 @@ public class Elevator {
     }
 
     /**
-     * Getter for the door levers of the floor.
+     * Getter for the doors of the floor.
      *
-     * @return List of door levers of the floor.
+     * @return List of doors of the floor.
      */
     @Nonnull
-    public List<Location> getDoorLevers() {
+    public List<Location> getDoors() {
       List<Location> clonedList = new ArrayList<>();
-      for (Location lever: doorLevers) {
-        clonedList.add(lever.clone());
+      for (Location door: doors) {
+        clonedList.add(door.clone());
       }
       return clonedList;
     }
 
     /**
-     * Adds a door lever to the floor.
+     * Adds a door to the floor.
      *
-     * @param loc Location of the lever.
+     * @param loc Location of the door.
      * @return True on success, false in failure.
      */
-    public boolean addDoorLever(@Nonnull Location loc) {
-      doorLevers.add(loc.clone());
+    public boolean addDoor(@Nonnull Location loc) {
+      doors.add(loc.clone());
       if (save()) {
         elevator.reload();
         return true;
       } else {
-        doorLevers.remove(doorLevers.size() - 1);
+        doors.remove(doors.size() - 1);
         return false;
       }
     }
 
     /**
-     * Checks if the floor contains a door lever.
+     * Checks if the floor contains a door.
      *
-     * @param x X coordinate of the lever.
-     * @param y Y coordinate of the lever.
-     * @param z Z coordinate of the lever.
-     * @return True if the floor contains the lever, false otherwise.
+     * @param x X coordinate of the door.
+     * @param y Y coordinate of the door.
+     * @param z Z coordinate of the door.
+     * @return True if the floor contains the door, false otherwise.
      */
-    public boolean containsDoorLever(int x, int y, int z) {
-      for (Location lever: doorLevers) {
-        if (lever.getBlockX() == x && lever.getBlockY() == y
-            && lever.getBlockZ() == z) {
+    public boolean containsDoor(int x, int y, int z) {
+      for (Location door: doors) {
+        if (door.getBlockX() == x && door.getBlockY() == y
+            && door.getBlockZ() == z) {
           return true;
         }
       }
@@ -819,23 +817,23 @@ public class Elevator {
     }
 
     /**
-     * Removes a door lever from the floor.
+     * Removes a door from the floor.
      *
-     * @param x X coordinate of the lever.
-     * @param y Y coordinate of the lever.
-     * @param z Z coordinate of the lever.
+     * @param x X coordinate of the door.
+     * @param y Y coordinate of the door.
+     * @param z Z coordinate of the door.
      * @return True on success, false in failure.
      */
-    public boolean removeDoorLever(int x, int y, int z) {
-      for (Location loc: doorLevers) {
+    public boolean removeDoor(int x, int y, int z) {
+      for (Location loc: doors) {
         if (loc.getBlockX() == x && loc.getBlockY() == y
             && loc.getBlockZ() == z) {
-          doorLevers.remove(loc);
+          doors.remove(loc);
           if (save()) {
             elevator.reload();
             return true;
           } else {
-            doorLevers.add(loc);
+            doors.add(loc);
             return false;
           }
         }
@@ -1040,7 +1038,7 @@ public class Elevator {
           p.teleport(p.getLocation().add(0, num, 0));
         }
       }
-      // handle blocks (lever and doors) that break when moved as other blocks
+      // handle blocks (door and doors) that break when moved as other blocks
       // separately
       List<Integer> breakingBlocksIndex = new ArrayList<>();
       List<BlockData> breakingBlocks = new ArrayList<>();
@@ -1048,7 +1046,7 @@ public class Elevator {
       for (int i=0; i< elevatorBlocks.size(); i++) {
         Material material =
             elevatorBlocks.get(i).getBlock().getBlockData().getMaterial();
-        if (material == Material.LEVER || material == Material.IRON_DOOR) {
+        if (material == Material.IRON_DOOR) {
           breakingBlocksIndex.add(i);
           breakingBlocks.add(elevatorBlocks.get(i).getBlock().getBlockData());
         }
@@ -1129,40 +1127,42 @@ public class Elevator {
       }
 
       Floor floor = floors.get(currentFloor);
-      // log a warning message if the floor door levers are not of type lever
-      if (floor.getDoorLevers().stream().map(doorLever ->
-              doorLever.getBlock().getBlockData().getMaterial())
-          .anyMatch(material -> material != Material.LEVER)) {
+      // log a warning message if the floor doors are not of type iron
+      // door
+      if (floor.getDoors().stream().map(door ->
+              door.getBlock().getBlockData().getMaterial())
+          .anyMatch(material -> material != Material.IRON_DOOR)) {
         plugin.getLogger().warning("One of floor " + currentFloor + " of " +
-            "elevator" + name + "'s door levers material type not lever!");
+            "elevator " + name + "'s doors material type not iron door!");
       }
-      // log a warning message if the elevator door levers are not of type lever
-      if (doorLevers.stream().map(doorLever -> masterBlock.clone()
-              .add(doorLever)).map(Location::getBlock)
+      // log a warning message if the elevator doors are not of type
+      // iron door
+      if (doors.stream().map(door -> masterBlock.clone()
+              .add(door)).map(Location::getBlock)
           .anyMatch(block -> block.getBlockData().getMaterial() !=
-              Material.LEVER)) {
-        plugin.getLogger().warning("One of elevator " + name + "'s door " +
-            "levers material type not lever!");
+              Material.IRON_DOOR)) {
+        plugin.getLogger().warning("One of elevator " + name + "'s doors " +
+            "material type not iron door!");
       }
-      // set the floor door levers state
-      floor.getDoorLevers().stream()
+      // set the floor doors state
+      floor.getDoors().stream()
           .map(Location::getBlock)
           .filter(block -> block.getBlockData().getMaterial() ==
-              Material.LEVER)
+              Material.IRON_DOOR)
           .forEach(block -> {
-            Switch aSwitch = (Switch) block.getBlockData();
-            aSwitch.setPowered(open);
-            block.setBlockData(aSwitch);
+            Openable openable = (Openable) block.getBlockData();
+            openable.setOpen(open);
+            block.setBlockData(openable);
           });
-      // set the elevator door levers state
-      doorLevers.stream().map(doorLever -> masterBlock.clone()
-              .add(doorLever)).map(Location::getBlock)
+      // set the elevator doors state
+      doors.stream().map(door -> masterBlock.clone()
+              .add(door)).map(Location::getBlock)
           .filter(block -> block.getBlockData().getMaterial() ==
-              Material.LEVER)
+              Material.IRON_DOOR)
           .forEach(block -> {
-            Switch aSwitch = (Switch) block.getBlockData();
-            aSwitch.setPowered(open);
-            block.setBlockData(aSwitch);
+            Openable openable = (Openable) block.getBlockData();
+            openable.setOpen(open);
+            block.setBlockData(openable);
           });
       // update doors state
       doorsOpen = open;

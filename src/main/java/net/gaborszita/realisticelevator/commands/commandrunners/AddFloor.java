@@ -111,7 +111,7 @@ public class AddFloor implements CommandRunner {
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n"
         + "[floor number] - Floor number\n"
-        + "[x] [y] [z] - Coordinates of the lever relative to the elevator's "
+        + "[x] [y] [z] - Coordinates of the door relative to the elevator's "
         + "master block (block of the elevator whose coordinates are the "
         + "smallest).";
   }

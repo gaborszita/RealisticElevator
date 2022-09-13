@@ -28,10 +28,10 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class RemoveFloorDoorLever implements CommandRunner {
+public class RemoveFloorDoor implements CommandRunner {
   private final ElevatorManager manager;
 
-  public RemoveFloorDoorLever(ElevatorManager manager) {
+  public RemoveFloorDoor(ElevatorManager manager) {
     this.manager = manager;
   }
 
@@ -72,10 +72,10 @@ public class RemoveFloorDoorLever implements CommandRunner {
       if (floor == null) {
         sender.sendMessage(ChatColor.RED + "Floor " + floorNumber + " does " +
             "not exist.");
-      } else if (!floor.containsDoorLever(coords[0], coords[1], coords[2])) {
-        sender.sendMessage(ChatColor.RED + "Door lever at " + coords[0] + " " +
+      } else if (!floor.containsDoor(coords[0], coords[1], coords[2])) {
+        sender.sendMessage(ChatColor.RED + "Door at " + coords[0] + " " +
             coords[1] + " " + coords[2] + " does not exist.");
-      } else if (floor.removeDoorLever(coords[0], coords[1], coords[2])) {
+      } else if (floor.removeDoor(coords[0], coords[1], coords[2])) {
         sender.sendMessage("Door level removed from floor " + floorNumber +
             ".");
       } else {
@@ -89,13 +89,13 @@ public class RemoveFloorDoorLever implements CommandRunner {
   @Nonnull
   @Override
   public String getCommand() {
-    return "removefloordoorlever";
+    return "removefloordoor";
   }
 
   @Nonnull
   @Override
   public String getDescription() {
-    return "Removes a door lever from a floor.";
+    return "Removes a door from a floor.";
   }
 
   @Nonnull
@@ -110,6 +110,6 @@ public class RemoveFloorDoorLever implements CommandRunner {
   public String getArguments() {
     return "[elevator name] - Name of the elevator\n" +
         "[floor number] - Floor number\n" +
-        "[x] [y] [z] - Coordinates of the door lever\n";
+        "[x] [y] [z] - Coordinates of the door\n";
   }
 }

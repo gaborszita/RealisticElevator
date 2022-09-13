@@ -51,6 +51,7 @@ public class RealisticElevator extends JavaPlugin {
     commandManager.registerCommand(new DeleteElevator(manager));
     commandManager.registerCommand(new ElevatorInfo(manager));
     commandManager.registerCommand(new GetFloorCallButton(manager));
+    commandManager.registerCommand(new GetMasterBlock(manager));
     commandManager.registerCommand(new GoToFloor(manager));
     commandManager.registerCommand(new ListDoorLevers(manager));
     commandManager.registerCommand(new ListElevators(manager));
@@ -75,6 +76,7 @@ public class RealisticElevator extends JavaPlugin {
       runners.add(new DeleteElevator(manager));
       runners.add(new ElevatorInfo(manager));
       runners.add(new GetFloorCallButton(manager));
+      runners.add(new GetMasterBlock(manager));
       runners.add(new GoToFloor(manager));
       runners.add(new ListDoorLevers(manager));
       runners.add(new ListElevators(manager));

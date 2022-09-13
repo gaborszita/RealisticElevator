@@ -447,6 +447,16 @@ public class Elevator {
   }
 
   /**
+   * Getter for the master block of the elevator.
+   *
+   * @return Master block of the elevator.
+   */
+  @Nonnull
+  public Location getMasterBlock() {
+    return masterBlock;
+  }
+
+  /**
    * Cancels the elevator mover task.
    *
    * @see #task

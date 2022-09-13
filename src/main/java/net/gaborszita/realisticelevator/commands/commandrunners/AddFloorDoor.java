@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2022 Gabor Szita
  *
  * This file is part of RealisticElevator.

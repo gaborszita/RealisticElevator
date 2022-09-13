@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class GoToFloor implements CommandRunner {
-  ElevatorManager manager;
+  private final ElevatorManager manager;
 
   public GoToFloor(ElevatorManager manager) {
     this.manager = manager;

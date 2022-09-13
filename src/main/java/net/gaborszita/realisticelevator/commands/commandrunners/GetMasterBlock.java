@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class GetMasterBlock implements CommandRunner {
-  ElevatorManager manager;
+  private final ElevatorManager manager;
 
   public GetMasterBlock(ElevatorManager manager) {
     this.manager = manager;

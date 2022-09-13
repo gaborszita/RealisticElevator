@@ -164,7 +164,7 @@ public class Elevator {
     this.doors = new ArrayList<>();
     this.floors = new HashMap<>();
     stops = new HashSet<>();
-    findBlocks();
+    findBlocks(null);
     blockEventListener = new BlockEventListener();
     plugin.getServer().getPluginManager().registerEvents(blockEventListener,
         plugin);
@@ -194,7 +194,7 @@ public class Elevator {
     this.doors = doors;
     this.floors = new HashMap<>();
     stops = new HashSet<>();
-    findBlocks();
+    findBlocks(null);
     blockEventListener = new BlockEventListener();
     plugin.getServer().getPluginManager().registerEvents(blockEventListener,
         plugin);
@@ -470,7 +470,16 @@ public class Elevator {
    * Reloads the elevator. Used when a property of the elevator is changed.
    */
   private void reload() {
-    findBlocks();
+    reload(null);
+  }
+
+  /**
+   * Reloads the elevator. Used when a property of the elevator is changed.
+   *
+   * @param ignoreBlock Block to ignore when reloading the elevator.
+   */
+  private void reload(@Nullable Block ignoreBlock) {
+    findBlocks(ignoreBlock);
     stops.clear();
     cancelTask();
   }
@@ -506,7 +515,7 @@ public class Elevator {
   /**
    * Finds the blocks of the elevator object.
    */
-  private void findBlocks() {
+  private void findBlocks(@Nullable Block ignoreBlock) {
     int l1x,l1y,l1z,l2x,l2y,l2z;
     l1x = loc1.getBlockX();
     l1y = loc1.getBlockY();
@@ -522,7 +531,7 @@ public class Elevator {
         for (int z=Math.min(l1z, l2z); z<=Math.max(l1z, l2z); z++) {
           Block block = Objects.requireNonNull(loc1.getWorld())
               .getBlockAt(x, y, z);
-          if (!block.getType().equals(Material.AIR)) {
+          if (!block.getType().equals(Material.AIR) && !block.equals(ignoreBlock)) {
             elevatorBlocks.add(block.getLocation());
             // If the master block is not set, set it to the first block that
             // is not null. Since the loops go from the smallest coordinates to
@@ -565,7 +574,7 @@ public class Elevator {
     @EventHandler
     public void onBlockPlaceEvent(@Nonnull BlockPlaceEvent event) {
       if (!event.isCancelled()) {
-        handle(event);
+        handle(event, null);
       }
     }
 
@@ -575,9 +584,9 @@ public class Elevator {
      * @param event Block removal event.
      */
     @EventHandler
-    public void onBlockDamageEvent(@Nonnull BlockDamageEvent event) {
+    public void onBlockBreakEvent(@Nonnull BlockBreakEvent event) {
       if (!event.isCancelled()) {
-        handle(event);
+        handle(event, event.getBlock());
       }
     }
 
@@ -586,7 +595,7 @@ public class Elevator {
      *
      * @param event Event to handle.
      */
-    public void handle(@Nonnull BlockEvent event) {
+    public void handle(@Nonnull BlockEvent event, @Nullable Block ignoreBlock) {
       int l1x,l1y,l1z,l2x,l2y,l2z;
       l1x = loc1.getBlockX();
       l1y = loc1.getBlockY();
@@ -604,7 +613,7 @@ public class Elevator {
       if (x >= Math.min(l1x, l2x) && x <= Math.max(l1x, l2x) &&
           y >= Math.min(l1y, l2y) && y <= Math.max(l1y, l2y) &&
           z >= Math.min(l1z, l2z) && z <= Math.max(l1z, l2z)) {
-        reload();
+        reload(ignoreBlock);
       }
     }
   }

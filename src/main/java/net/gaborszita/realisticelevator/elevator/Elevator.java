@@ -514,6 +514,8 @@ public class Elevator {
 
   /**
    * Finds the blocks of the elevator object.
+   *
+   * @param ignoreBlock Block to ignore when finding the blocks.
    */
   private void findBlocks(@Nullable Block ignoreBlock) {
     int l1x,l1y,l1z,l2x,l2y,l2z;
@@ -594,6 +596,7 @@ public class Elevator {
      * Handles the event.
      *
      * @param event Event to handle.
+     * @param ignoreBlock Block to ignore when reloading the elevator.
      */
     public void handle(@Nonnull BlockEvent event, @Nullable Block ignoreBlock) {
       int l1x,l1y,l1z,l2x,l2y,l2z;

@@ -449,7 +449,7 @@ public class Elevator {
    *
    * @return Master block of the elevator.
    */
-  @Nonnull
+  @Nullable
   public Location getMasterBlock() {
     return masterBlock;
   }

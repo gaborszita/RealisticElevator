@@ -29,10 +29,14 @@ public class GetMasterBlock implements CommandRunner {
     } else {
       Location masterBlock = Objects.requireNonNull(manager
           .getElevator(name)).getMasterBlock();
-      sender.sendMessage("Elevator " + name + " master block: " +
-          masterBlock.getBlockX() + " " +
-          masterBlock.getBlockY() + " " +
-          masterBlock.getBlockZ());
+      if (masterBlock == null) {
+        sender.sendMessage("Elevator " + name + " does not have any blocks.");
+      } else {
+        sender.sendMessage("Elevator " + name + " master block: " +
+            masterBlock.getBlockX() + " " +
+            masterBlock.getBlockY() + " " +
+            masterBlock.getBlockZ());
+      }
     }
   }
 
